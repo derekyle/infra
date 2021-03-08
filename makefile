@@ -63,6 +63,6 @@ encrypt:
 # 	cd terraform/cloud; terraform destroy
 
 gitinit:
-	@./git-init.sh
-	@echo "ansible vault pre-commit hook installed"
-	@echo "don't forget to create a .vault-password too"
+	./git-init.sh
+	echo "ansible vault pre-commit hook installed"
+	echo "don't forget to create a .vault-password too"
