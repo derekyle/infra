@@ -6,7 +6,7 @@
       authorized_key:  
         user: "{{ ansible_user | default('alex') }}"
         state: present
-        key: https://github.com/ironicbadger.keys
+        key: https://github.com/derekyle.keys
     - name: update all packages
       become: true
       package:
