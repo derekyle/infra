@@ -1,0 +1,62 @@
+---
+
+# - name: create /mnt points
+#   file:
+#     dest: "{{ item.path }}"
+#     state: directory
+#     owner: nobody
+#     group: nogroup
+#     mode: 0777
+#   with_items: 
+#     - "{{ data_disks }}"
+
+- name: create ro directories
+  file:
+    path: "/merged/{{ item.poolfolder }}"
+    state: directory
+    mode: "u=ro,g=ro,o=ro"
+  with_items:
+    - "{{ data_disks }}"
+
+- name: create main storage dir ro
+  file:
+    path: "{{ storage_path }}"
+    state: directory
+    mode: "u=ro,g=ro,o=ro"
+
+- name: initial mount pool disks
+  mount:
+    name: "{{ item.path }}/{{ item.disklabel }}"
+    src: "LABEL={{ item.disklabel }}"
+    fstype: "{{ item.fs }}"
+    opts: "{{ item.opts }}"
+    # change to 'mounted' to auto mount
+    state: "{{ item.state }}"
+  with_items:
+    - "{{ data_disks }}"
+  # when: item.path != '/mnt/storage'
+
+- name: bind mount pool mounts
+  mount:
+    name: "/merged/{{ item.poolfolder }}"
+    src: "{{ item.path }}/{{ item.disklabel }}/{{ item.poolfolder }}"
+    fstype: "none"
+    opts: "bind"
+    # change to 'mounted' to auto mount
+    state: mounted
+  with_items:
+    - "{{ data_disks }}"
+  # when: item.path != '/mnt/storage'
+
+
+# - name: mount mergerfs array
+#   with_items:
+#   - "{{ fstab_mergerfs }}"
+#   mount:
+#     name: "{{ item.mountpoint }}"
+#     src: "{{ item.source }}"
+#     opts: "{{ item.opts }}"
+#     fstype: "{{ item.fs }}"
+#     # change to 'mounted' to auto mount
+#     state: mounted
+

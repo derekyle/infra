@@ -1,0 +1,18 @@
+---
+- hosts: mediaserver
+  vars_files:
+    - 'vars/vault.yaml'
+  roles: []
+  tasks:
+    - name: create a new ext4 primary partition
+      parted:
+        device: "{{ item.id }}"
+        label: gpt
+        name: "{{ item.textLabel }}"
+        number: 1
+        part_start: "0%"
+        part_end: "100%"
+        state: present
+        fs_type: ext4
+      with_items:
+        - "{{ new_disk_prep }}"

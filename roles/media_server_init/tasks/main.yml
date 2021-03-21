@@ -1,0 +1,21 @@
+---
+
+- name: ensure hostname is set correctly
+  hostname:
+    name: "media-server"
+
+- name: disks
+  include: disks.yml
+  tags:
+    - disks
+
+- name: install mergerfs-tools
+  include: mergerfs-tools.yml
+  tags:
+    - mergerfs-tools 
+
+
+# - name: file-sharing
+#   include: file-sharing.yml
+#   tags:
+#     - file-sharing

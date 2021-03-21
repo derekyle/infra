@@ -1,0 +1,13 @@
+- name: Download mergerfs tools
+  get_url:
+    url: "https://raw.githubusercontent.com/trapexit/mergerfs-tools/master/src/mergerfs.{{ item }}"
+    dest: /usr/local/bin/mergerfs.{{ item }}
+    mode: '+x'
+  with_items:
+    - balance
+    - consolidate
+    - ctl
+    - dedup
+    - dup
+    - fsck
+    - mktrash

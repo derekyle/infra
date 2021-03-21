@@ -1,11 +1,13 @@
 ---
-  - hosts: media-server
+  - hosts: mediaserver
     vars_files:
       - 'vars/vault.yaml'
     roles:
-      - role: media-server
-      - role: geerlingguy.docker
       - role: grog.package
+      - role: media_server_init
+      - role: sprat.mergerfs
+      - role: geerlingguy.docker
+      # - role: weareinteractive.docker
     tasks:
       - name: remove ubuntu motd spam
         become: true

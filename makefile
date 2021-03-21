@@ -1,48 +1,5 @@
-bastion:
-	ansible-playbook -b run.yaml --limit bastion --ask-become-pass --vault-password-file .vault-password
-
-bcomp:
-	ansible-playbook run.yaml --limit bastion --vault-password-file .vault-password --tags compose
-
-c:
-	ansible-playbook -b run.yaml --limit cartman --ask-become-pass --vault-password-file .vault-password
-
-ccomp:
-	ansible-playbook run.yaml --limit cartman --vault-password-file .vault-password --tags compose
-
-h:
-	ansible-playbook -b run.yaml --limit helios64 --ask-become-pass --vault-password-file .vault-password
-
-hcomp:
-	ansible-playbook run.yaml --limit helios64 --vault-password-file .vault-password --tags compose
-
-m:
-	ansible-playbook -b run.yaml --limit morpheus --ask-become-pass --vault-password-file .vault-password
-
-mcomp:
-	ansible-playbook run.yaml --limit morpheus --vault-password-file .vault-password --tags compose
-
-q:
-	ansible-playbook -b run.yaml --limit quassel --ask-become-pass --vault-password-file .vault-password
-
-cloud:
-	ansible-playbook -b run.yaml --limit cloud --ask-become-pass --vault-password-file .vault-password
-
-cloudcomp:
-	ansible-playbook run.yaml --limit cloud --tags compose --vault-password-file .vault-password
-
-status:
-	ansible-playbook -b run.yaml --limit status --ask-become-pass --vault-password-file .vault-password
-
-statuscomp:
-	ansible-playbook run.yaml --limit status --tags compose --vault-password-file .vault-password
-
-statusdns:
-	cd terraform/environments/status; terraform apply
-
-
-update:
-	ansible-playbook update.yaml --limit servers --vault-password-file .vault-password
+formatdisk:
+	ansible-playbook -b new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 reqs:
 	ansible-galaxy install -r requirements.yaml
