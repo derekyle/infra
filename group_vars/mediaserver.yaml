@@ -2,10 +2,23 @@
 
 target_os: ubuntu
 storage_path: /storage
-appdata_path: /var/appdata
+appdata_path: /config
 
 new_disk_prep:
-  - { id: /dev/sdb, textLabel: DB3 }
+  # - id: /dev/sdb
+  - id: /dev/disk/by-partlabel/DB3
+    newPartLabel: MP03
+
+data_disks:
+  - { path: /mnt, partLabel: MP03, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP03 }
+  # - { path: /mnt/disk2, diskbyid: /dev/disk/by-id/ata-ST10000DM0004-2GR11L_ZJV6A8WV-part1, fs: ntfs, opts: ro, content: true }
+
+#vars for the sprat.mergerfs role
+mergerfs_mounts:
+  - path: "{{ storage_path }}"
+    branches:
+      - "/merged/PoolPart.*"
+    options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=epmfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
 
 # grog.package
 package_list:
@@ -18,14 +31,3 @@ package_list:
   # - name: mergerfs
   # - name: nfs-kernel-server
   # - name: openssh-server
-
-data_disks:
-  - { path: /mnt, disklabel: DB3, fs: ntfs, opts: defaults, state: mounted, content: true, poolfolder: PoolPart.c54dff8c-32f2-4b17-b747-80e2f13d1a13 }
-  # - { path: /mnt/disk2, diskbyid: /dev/disk/by-id/ata-ST10000DM0004-2GR11L_ZJV6A8WV-part1, fs: ntfs, opts: ro, content: true }
-
-#vars for the sprat.mergerfs role
-mergerfs_mounts:
-  - path: "{{ storage_path }}"
-    branches:
-      - "/merged/PoolPart.*"
-    options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=epmfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"

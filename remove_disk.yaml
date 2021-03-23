@@ -1,14 +1,14 @@
 ---
 - hosts: mediaserver
-  vars_files:
-    - 'vars/vault.yaml'
+  # vars_files:
+  #   - 'vars/vault.yaml'
   roles: []
   tasks:
-    - name: create a new ext4 primary partition
-      parted:
+    - name: remove drive from mergerfs pool
+      community.general.parted:
         device: "{{ item.id }}"
         label: gpt
-        name: "{{ item.textLabel }}"
+        name: "{{ item.newPartLabel }}"
         number: 1
         part_start: "0%"
         part_end: "100%"

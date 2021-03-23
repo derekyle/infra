@@ -1,5 +1,11 @@
-formatdisk:
-	ansible-playbook -b new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+add_new_disk:
+	ansible-playbook -b -v add_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
+init_mediaserver:
+	ansible-playbook -b run.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
+install_containers:
+	ansible-playbook -b run.yaml --tags container-apps --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 reqs:
 	ansible-galaxy install -r requirements.yaml

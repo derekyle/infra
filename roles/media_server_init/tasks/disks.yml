@@ -12,7 +12,7 @@
 
 - name: create ro directories
   file:
-    path: "/merged/{{ item.poolfolder }}"
+    path: "/merged/{{ item.poolFolder }}"
     state: directory
     mode: "u=ro,g=ro,o=ro"
   with_items:
@@ -25,9 +25,9 @@
     mode: "u=ro,g=ro,o=ro"
 
 - name: initial mount pool disks
-  mount:
-    name: "{{ item.path }}/{{ item.disklabel }}"
-    src: "LABEL={{ item.disklabel }}"
+  ansible.posix.mount:
+    name: "{{ item.path }}/{{ item.partLabel }}"
+    src: "/dev/disk/by-partlabel/{{ item.partLabel }}"
     fstype: "{{ item.fs }}"
     opts: "{{ item.opts }}"
     # change to 'mounted' to auto mount
@@ -37,9 +37,9 @@
   # when: item.path != '/mnt/storage'
 
 - name: bind mount pool mounts
-  mount:
-    name: "/merged/{{ item.poolfolder }}"
-    src: "{{ item.path }}/{{ item.disklabel }}/{{ item.poolfolder }}"
+  ansible.posix.mount:
+    name: "/merged/{{ item.poolFolder }}"
+    src: "{{ item.path }}/{{ item.partLabel }}/{{ item.poolFolder }}"
     fstype: "none"
     opts: "bind"
     # change to 'mounted' to auto mount

@@ -1,0 +1,14 @@
+- name: Create config directory
+  file:
+    path: "/config"
+    state: directory
+
+- name: copy over all container stuff
+  copy:
+    src: "{{ role_path }}/files/containers/"
+    dest: "/config"
+
+- name: create .env file for docker-compose
+  copy:
+    dest: "/config/.env"
+    content: "{{ composer_env }}"
