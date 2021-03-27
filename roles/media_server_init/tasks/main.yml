@@ -2,22 +2,27 @@
 
 - name: ensure hostname is set correctly
   hostname:
-    name: "media-server"
+    name: "mediaserver"
+  tags:
+    - init
 
 - name: disks
   include: disks.yml
   tags:
     - disks
+    - init
 
 - name: install mergerfs-tools
   include: mergerfs-tools.yml
   tags:
-    - mergerfs-tools 
+    - mergerfs-tools
+    - init
 
 - name: install all container apps
   include: container-apps.yml
   tags:
     - container-apps
+    - init
 
 # - name: file-sharing
 #   include: file-sharing.yml

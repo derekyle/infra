@@ -27,7 +27,7 @@
 - name: initial mount pool disks
   ansible.posix.mount:
     name: "{{ item.path }}/{{ item.partLabel }}"
-    src: "/dev/disk/by-partlabel/{{ item.partLabel }}"
+    src: "/dev/disk/by-label/{{ item.partLabel }}"
     fstype: "{{ item.fs }}"
     opts: "{{ item.opts }}"
     # change to 'mounted' to auto mount
@@ -47,6 +47,14 @@
   with_items:
     - "{{ data_disks }}"
   # when: item.path != '/mnt/storage'
+
+- name: Recursively change ownership of storage pool
+  ansible.builtin.file:
+    path: "/storage"
+    state: directory
+    recurse: yes
+    owner: 1000
+    group: 1000
 
 
 # - name: mount mergerfs array

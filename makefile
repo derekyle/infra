@@ -1,6 +1,9 @@
 add_new_disk:
 	ansible-playbook -b -v add_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
+migrate_configs:
+	ansible-playbook -b -vv migrate_data.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
 init_mediaserver:
 	ansible-playbook -b run.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
@@ -9,6 +12,7 @@ install_containers:
 
 reqs:
 	ansible-galaxy install -r requirements.yaml
+	ansible-galaxy collection install -r requirements.yaml
 
 forcereqs:
 	ansible-galaxy install -r requirements.yaml --force

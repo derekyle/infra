@@ -4,14 +4,28 @@ target_os: ubuntu
 storage_path: /storage
 appdata_path: /config
 
-new_disk_prep:
+new_disk_prep: []
   # - id: /dev/sdb
-  - id: /dev/disk/by-partlabel/DB3
-    newPartLabel: MP03
+  # - id: /dev/disk/by-partlabel/DB3
+    # newPartLabel: MP03
 
 data_disks:
+  - { path: /mnt, partLabel: M16, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b1429157-045f-4b2c-97a7-1ac056959407 }
+  - { path: /mnt, partLabel: DB17, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.3b15b9f9-e29f-4f83-975c-b803c59e5eff }
+  - { path: /mnt, partLabel: DB14, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.1ec001b7-521f-4a0c-a9e8-9612808ad3ec }
+  - { path: /mnt, partLabel: DB11, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.f943092c-2297-4715-ac7c-f440555879a0 }
+  - { path: /mnt, partLabel: DB2, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.9ab5addc-bad1-40ed-9eef-8ad4b9153903 }
+  - { path: /mnt, partLabel: DB15, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.2c8a3d93-7bdf-4b62-85a6-5d21e254e017 }
+  - { path: /mnt, partLabel: DB1, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.337724c2-a479-4f1e-bcc8-70586d8636e1 }
+  - { path: /mnt, partLabel: DB4, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b490f479-8332-470d-86a8-d441e7afe877 }
+  - { path: /mnt, partLabel: DB10, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.93426b8c-d800-4713-9fc6-f48140818d42 }
+  - { path: /mnt, partLabel: DB5, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.158969c6-1b8d-4368-b214-df3704d9c52d }
+  - { path: /mnt, partLabel: DB6, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.73c61236-bbce-460f-b658-2ac79cb3e30a }
+  - { path: /mnt, partLabel: DB13, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.8a6e95b7-f37a-4bdb-80a3-fedd09e83f37 }
+  - { path: /mnt, partLabel: M14, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.3fcd95f9-cfb2-4149-afe4-236596bdcb08 }
+  - { path: /mnt, partLabel: DB12, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.c54dff8c-32f2-4b17-b747-80e2f13d1a12 }
+  - { path: /mnt, partLabel: Shows, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.28fd1ea6-b8b9-4e3a-bde0-cfee03c482cb }
   - { path: /mnt, partLabel: MP03, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP03 }
-  # - { path: /mnt/disk2, diskbyid: /dev/disk/by-id/ata-ST10000DM0004-2GR11L_ZJV6A8WV-part1, fs: ntfs, opts: ro, content: true }
 
 #vars for the sprat.mergerfs role
 mergerfs_mounts:
@@ -20,14 +34,20 @@ mergerfs_mounts:
       - "/merged/PoolPart.*"
     options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=epmfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
 
+pip_install_packages:
+  - name: docker
+  - name: docker-compose
+
 # grog.package
 package_list:
   - name: hddtemp
   - name: rsync
-  # - name: htop
-  # - name: iftop
   - name: intel-gpu-tools
-  # - name: iotop
-  # - name: mergerfs
-  # - name: nfs-kernel-server
-  # - name: openssh-server
+
+migration_list:
+  - { src: '/mnt/M14/PoolPart.3fcd95f9-cfb2-4149-afe4-236596bdcb08', dest: '/storage'}
+  # - { src: '/mnt/c/Users/Administrator/AppData/Local/Plex Media Server', dest: '/config/plex/Library/Application Support/Plex Media Server' }
+  # - { src: '/mnt/c/Users/Administrator/AppData/Local/qBittorrent/BT_backup', dest: '/config/qbittorrent/qBittorrent' }
+
+# ntfs_migration:
+#   - { mount: '/mnt', }

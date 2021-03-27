@@ -1,5 +1,6 @@
 roles:
   - src: geerlingguy.docker
+  - src: geerlingguy.pip
 # - src: geerlingguy.security
 # - src: geerlingguy.ntp
 # - src: geerlingguy.github-users
@@ -18,3 +19,4 @@ roles:
 collections:
   - community.general
   - ansible.posix
+  - community.docker

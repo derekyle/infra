@@ -1,0 +1,23 @@
+---
+- hosts: mediaserver
+  # vars_files:
+  #   - 'vars/vault.yaml'
+  roles: []
+  tasks:
+    - name: migrate list of directories
+      ansible.posix.synchronize:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      delegate_to: "{{ inventory_hostname }}"
+      with_items:
+        - "{{ migration_list }}"
+
+    - name: Recursively change ownership of newly migrated files
+      ansible.builtin.file:
+        path: "{{ item.dest }}"
+        state: directory
+        recurse: yes
+        owner: 1000
+        group: 1000
+      with_items:
+        - "{{ migration_list }}"

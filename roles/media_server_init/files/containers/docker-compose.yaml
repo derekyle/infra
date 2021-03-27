@@ -1,30 +1,48 @@
-version: "3"
+version: "2.1"
 
 services:
   plex:
     image: ghcr.io/linuxserver/plex
     container_name: plex
-    network_mode: host
+    # network_mode: host
     environment:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
-      # - PLEX_CLAIM= #optional
+      # - PLEX_CLAIM=claim-GUjXpgvoEXxRM6j1m7q-
     volumes:
       - /config/plex:/config
-      - /storage/tv:/tv
-      - /storage/movies:/movies
+      - /storage/TV Shows:/tv
+      - /storage/Movies:/movies
+      - /storage/Music-MP3:/music
     devices:
-      - "/dev/dri:/dev/dri"
+      - /dev/dri:/dev/dri
+    ports:
+      - 32400:32400
+      - 1900:1900/udp
+      - 3005:3005
+      # - 5353:5353/udp
+      - 8324:8324
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+      - 32469:32469
     restart: unless-stopped
-    # ports:
-    #   - 32400:32400
-    #   - 1900:1900/udp
-    #   - 3005:3005
-    #   - 5353:5353/udp
-    #   - 8324:8324
-    #   - 32410:32410/udp
-    #   - 32412:32412/udp
-    #   - 32413:32413/udp
-    #   - 32414:32414/udp
-    #   - 32469:32469
+  
+  qbittorrent:
+    image: ghcr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/LosAngeles
+      - WEBUI_PORT=8080
+    volumes:
+      - /config/qbittorrent:/config
+      - /storage/Downloads:/downloads
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 8080:8080
+    restart: unless-stopped

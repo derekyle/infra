@@ -4,9 +4,10 @@
       - 'vars/vault.yaml'
     roles:
       - role: grog.package
+      - role: geerlingguy.docker
+      - role: geerlingguy.pip
       - role: media_server_init
       - role: sprat.mergerfs
-      - role: geerlingguy.docker
       # - role: weareinteractive.docker
     tasks:
       - name: remove ubuntu motd spam
@@ -113,3 +114,5 @@
   #   tasks:
   #     - hostname:
   #         name: "{{ status_hostname }}"
+
+# @TODO convert these instructions to ansible: https://dgpu-docs.intel.com/installation-guides/ubuntu/ubuntu-focal.html

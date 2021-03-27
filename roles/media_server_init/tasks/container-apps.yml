@@ -12,3 +12,8 @@
   copy:
     dest: "/config/.env"
     content: "{{ composer_env }}"
+
+- name: Create and start services
+  community.docker.docker_compose:
+    project_src: /config
+  register: output
