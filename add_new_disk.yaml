@@ -32,7 +32,7 @@
         src: "{{ item.id }}"
         fstype: "ext4"
         # change to 'mounted' to auto mount
-        state: "mounted"
+        state: "{{ item.state }}"
       with_items:
         - "{{ new_disk_prep }}"
     
