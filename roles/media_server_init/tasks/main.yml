@@ -11,6 +11,7 @@
   tags:
     - disks
     - init
+    - mount
 
 - name: install mergerfs-tools
   include: mergerfs-tools.yml
@@ -24,7 +25,7 @@
     - container-apps
     - init
 
-# - name: file-sharing
-#   include: file-sharing.yml
-#   tags:
-#     - file-sharing
+- name: file-sharing nfs setup
+  include: file-sharing.yml
+  tags:
+    - file-sharing

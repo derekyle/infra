@@ -12,9 +12,9 @@ services:
       # - PLEX_CLAIM=claim-GUjXpgvoEXxRM6j1m7q-
     volumes:
       - /config/plex:/config
-      - /storage/TV Shows:/tv
-      - /storage/Movies:/movies
-      - /storage/Music-MP3:/music
+      - /storage/data/media/tv:/tv
+      - /storage/data/media/movies:/movies
+      - /storage/data/media/music:/music
     devices:
       - /dev/dri:/dev/dri
     ports:
@@ -30,19 +30,128 @@ services:
       - 32469:32469
     restart: unless-stopped
   
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.filename=/etc/traefik/rules.yaml"
+      - "--entrypoints.web.address=:80"
+      # forces redirect to https
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=the.derek.carr@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8484:8080"
+    volumes:
+      - "/config/letsencrypt:/letsencrypt"
+      - "/config/traefik:/etc/traefik"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: unless-stopped
+
   qbittorrent:
-    image: ghcr.io/linuxserver/qbittorrent
+    image: linuxserver/qbittorrent:4.1.9.99201911190849-6738-0b055d8ubuntu18.04.1-ls54
     container_name: qbittorrent
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/LosAngeles
+      - TZ=America/Los_Angeles
       - WEBUI_PORT=8080
     volumes:
       - /config/qbittorrent:/config
-      - /storage/Downloads:/downloads
+      - /storage/data/torrents:/data/torrents
     ports:
       - 6881:6881
       - 6881:6881/udp
       - 8080:8080
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qb.rule=Host(`qb.dc5.in`)"
+      - "traefik.http.routers.qb.entrypoints=websecure"
+      - "traefik.http.routers.qb.tls.certresolver=myresolver"
+
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /config/sonarr:/config
+      - /storage/data:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.dc5.in`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+  
+  radarr:
+    image: ghcr.io/linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /config/radarr:/config
+      - /storage/data:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.dc5.in`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+
+  tautulli:
+    image: ghcr.io/linuxserver/tautulli
+    container_name: tautulli
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /config/tautulli:/config
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tautulli.rule=Host(`tautulli.dc5.in`)"
+      - "traefik.http.routers.tautulli.entrypoints=websecure"
+      - "traefik.http.routers.tautulli.tls.certresolver=myresolver"
+
+  nzbget:
+    image: ghcr.io/linuxserver/nzbget
+    container_name: nzbget
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /config/nzbget:/config
+      - /storage/data/usenet:/data/usenet
+    ports:
+      - 6789:6789
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nzbget.rule=Host(`nzbget.dc5.in`)"
+      - "traefik.http.routers.nzbget.entrypoints=websecure"
+      - "traefik.http.routers.nzbget.tls.certresolver=myresolver"

@@ -4,10 +4,10 @@ target_os: ubuntu
 storage_path: /storage
 appdata_path: /config
 
-new_disk_prep: []
+new_disk_prep:
   # - id: /dev/sdb
-  # - id: /dev/disk/by-partlabel/DB3
-    # newPartLabel: MP03
+  - id: /dev/sda
+    newPartLabel: MP14
 
 data_disks:
   - { path: /mnt, partLabel: M16, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b1429157-045f-4b2c-97a7-1ac056959407 }
@@ -22,17 +22,20 @@ data_disks:
   - { path: /mnt, partLabel: DB5, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.158969c6-1b8d-4368-b214-df3704d9c52d }
   - { path: /mnt, partLabel: DB6, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.73c61236-bbce-460f-b658-2ac79cb3e30a }
   - { path: /mnt, partLabel: DB13, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.8a6e95b7-f37a-4bdb-80a3-fedd09e83f37 }
-  - { path: /mnt, partLabel: M14, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.3fcd95f9-cfb2-4149-afe4-236596bdcb08 }
+  - { path: /mnt, partLabel: MP14, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP14 }
   - { path: /mnt, partLabel: DB12, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.c54dff8c-32f2-4b17-b747-80e2f13d1a12 }
   - { path: /mnt, partLabel: Shows, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.28fd1ea6-b8b9-4e3a-bde0-cfee03c482cb }
   - { path: /mnt, partLabel: MP03, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP03 }
+
+# when set to true, the mount tasks will recusively chown all files in /storage to 1000/1000
+chown_storage: false
 
 #vars for the sprat.mergerfs role
 mergerfs_mounts:
   - path: "{{ storage_path }}"
     branches:
       - "/merged/PoolPart.*"
-    options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=epmfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
+    options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=mfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
 
 pip_install_packages:
   - name: docker
@@ -44,8 +47,10 @@ package_list:
   - name: rsync
   - name: intel-gpu-tools
 
+
+#forward slashes at the end of src directory matter! with a slash syncs over the contents of the directory
 migration_list:
-  - { src: '/mnt/M14/PoolPart.3fcd95f9-cfb2-4149-afe4-236596bdcb08', dest: '/storage'}
+  - { src: '/mnt/M14/PoolPart.3fcd95f9-cfb2-4149-afe4-236596bdcb08/', dest: '/storage'}
   # - { src: '/mnt/c/Users/Administrator/AppData/Local/Plex Media Server', dest: '/config/plex/Library/Application Support/Plex Media Server' }
   # - { src: '/mnt/c/Users/Administrator/AppData/Local/qBittorrent/BT_backup', dest: '/config/qbittorrent/qBittorrent' }
 

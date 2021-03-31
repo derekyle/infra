@@ -1,0 +1,32 @@
+http:
+  routers:
+    router-homeassistant:
+      entryPoints:
+        - websecure
+      rule: Host(`house.dc5.in`)
+      service: service-homeassistant
+      tls:
+        certResolver: myresolver
+    router-homeassistant-endpoint:
+      entryPoints:
+        - websecure
+      rule: Host(`alexa-endpoint.dc5.in`)
+      service: service-homeassistant
+      tls:
+        certResolver: myresolver
+    # router-octoprint:
+    #   entryPoints:
+    #     - websecure
+    #   rule: Host(`octoprint.dc5.in`)
+    #   service: service-octoprint
+    #   tls:
+    #     certResolver: myresolver
+  services:
+    service-homeassistant:
+      loadBalancer:
+        servers:
+        - url: "http://192.168.1.100:8123"
+    # service-octoprint:
+    #   loadBalancer:
+    #     servers:
+    #     - url: "http://192.168.1.90:80"

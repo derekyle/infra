@@ -15,8 +15,8 @@
     path: "/merged/{{ item.poolFolder }}"
     state: directory
     mode: "u=ro,g=ro,o=ro"
-  with_items:
-    - "{{ data_disks }}"
+  loop: "{{ data_disks }}"
+  when: item.state == 'mounted'
 
 - name: create main storage dir ro
   file:
@@ -32,8 +32,7 @@
     opts: "{{ item.opts }}"
     # change to 'mounted' to auto mount
     state: "{{ item.state }}"
-  with_items:
-    - "{{ data_disks }}"
+  loop: "{{ data_disks }}"
   # when: item.path != '/mnt/storage'
 
 - name: bind mount pool mounts
@@ -43,10 +42,19 @@
     fstype: "none"
     opts: "bind"
     # change to 'mounted' to auto mount
-    state: mounted
-  with_items:
-    - "{{ data_disks }}"
+    state: "{{ item.state }}"
+  loop: "{{ data_disks }}"
   # when: item.path != '/mnt/storage'
+
+- name: Delete empty bind mount directories of unmounted disks
+  ansible.builtin.command: "rmdir /merged/{{ item.poolFolder }}"
+  loop: "{{ data_disks }}"
+  when: item.state == 'unmounted'
+
+- name: Delete empty mount directories of unmounted disks
+  ansible.builtin.command: "rmdir /mnt/{{ item.partLabel }}"
+  loop: "{{ data_disks }}"
+  when: item.state == 'unmounted'
 
 - name: Recursively change ownership of storage pool
   ansible.builtin.file:
@@ -55,6 +63,7 @@
     recurse: yes
     owner: 1000
     group: 1000
+  when: chown_storage == true
 
 
 # - name: mount mergerfs array

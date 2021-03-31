@@ -9,7 +9,7 @@
 
 - name: install samba config
   copy:
-    src: etc/samba/smb.conf
+    src: smb.conf
     dest: /etc/samba/smb.conf
     owner: root
     group: root

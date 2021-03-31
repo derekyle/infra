@@ -7,8 +7,14 @@ migrate_configs:
 init_mediaserver:
 	ansible-playbook -b run.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
+add_remove_disks:
+	ansible-playbook -b run.yaml --tags disks --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
 install_containers:
 	ansible-playbook -b run.yaml --tags container-apps --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
+run_mergerfs:
+	ansible-playbook -b run.yaml --limit mediaserver --tags mergerfs --ask-become-pass --vault-password-file .vault-password
 
 reqs:
 	ansible-galaxy install -r requirements.yaml

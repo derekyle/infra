@@ -29,10 +29,10 @@
     - name: tmp mount the new partition
       ansible.posix.mount:
         name: "/tmp/{{ item.newPartLabel }}"
-        src: "{{ item.id }}"
+        src: "{{ item.id }}1"
         fstype: "ext4"
         # change to 'mounted' to auto mount
-        state: "{{ item.state }}"
+        state: "mounted"
       with_items:
         - "{{ new_disk_prep }}"
     
