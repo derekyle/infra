@@ -8,6 +8,9 @@ new_disk_prep:
   - id: /dev/disk/by-id/wwn-0x5000cca252e3597f
     newPartLabel: MP18
 
+# command to list out disks by label and device id
+# lsblk |awk 'NR==1{print $0" DEVICE-ID(S)"}NR>1{dev=$1;gsub("[^[:alnum:]]","",dev);printf $0"\t\t";system("find /dev/disk/by-id -lname \"*"dev"\" -printf \" %p\"");print "";}'
+
 data_disks:
   - { partLabel: M16, by-id: '/dev/disk/by-id/ata-WDC_WD80EMAZ-00WJTA0_2SG53JXJ', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b1429157-045f-4b2c-97a7-1ac056959407 }
   - { partLabel: DB17, by-id: '/dev/disk/by-id/ata-ST16000NM001G-2KK103_ZL2637LS', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.3b15b9f9-e29f-4f83-975c-b803c59e5eff }
