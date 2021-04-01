@@ -5,27 +5,26 @@ storage_path: /storage
 appdata_path: /config
 
 new_disk_prep:
-  # - id: /dev/sdb
-  - id: /dev/sda
-    newPartLabel: MP14
+  - id: /dev/disk/by-id/wwn-0x5000cca252e3597f
+    newPartLabel: MP18
 
 data_disks:
-  - { path: /mnt, partLabel: M16, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b1429157-045f-4b2c-97a7-1ac056959407 }
-  - { path: /mnt, partLabel: DB17, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.3b15b9f9-e29f-4f83-975c-b803c59e5eff }
-  - { path: /mnt, partLabel: DB14, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.1ec001b7-521f-4a0c-a9e8-9612808ad3ec }
-  - { path: /mnt, partLabel: DB11, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.f943092c-2297-4715-ac7c-f440555879a0 }
-  - { path: /mnt, partLabel: DB2, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.9ab5addc-bad1-40ed-9eef-8ad4b9153903 }
-  - { path: /mnt, partLabel: DB15, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.2c8a3d93-7bdf-4b62-85a6-5d21e254e017 }
-  - { path: /mnt, partLabel: DB1, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.337724c2-a479-4f1e-bcc8-70586d8636e1 }
-  - { path: /mnt, partLabel: DB4, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b490f479-8332-470d-86a8-d441e7afe877 }
-  - { path: /mnt, partLabel: DB10, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.93426b8c-d800-4713-9fc6-f48140818d42 }
-  - { path: /mnt, partLabel: DB5, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.158969c6-1b8d-4368-b214-df3704d9c52d }
-  - { path: /mnt, partLabel: DB6, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.73c61236-bbce-460f-b658-2ac79cb3e30a }
-  - { path: /mnt, partLabel: DB13, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.8a6e95b7-f37a-4bdb-80a3-fedd09e83f37 }
-  - { path: /mnt, partLabel: MP14, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP14 }
-  - { path: /mnt, partLabel: DB12, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.c54dff8c-32f2-4b17-b747-80e2f13d1a12 }
-  - { path: /mnt, partLabel: Shows, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.28fd1ea6-b8b9-4e3a-bde0-cfee03c482cb }
-  - { path: /mnt, partLabel: MP03, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP03 }
+  - { partLabel: M16, by-id: '/dev/disk/by-id/ata-WDC_WD80EMAZ-00WJTA0_2SG53JXJ', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b1429157-045f-4b2c-97a7-1ac056959407 }
+  - { partLabel: DB17, by-id: '/dev/disk/by-id/ata-ST16000NM001G-2KK103_ZL2637LS', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.3b15b9f9-e29f-4f83-975c-b803c59e5eff }
+  - { partLabel: DB14, by-id: '/dev/disk/by-id/ata-ST8000DM004-2CX188_WCT0DX30', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.1ec001b7-521f-4a0c-a9e8-9612808ad3ec }
+  - { partLabel: DB11, by-id: '/dev/disk/by-id/ata-ST5000DM000-1FK178_W4J0KTWJ', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.f943092c-2297-4715-ac7c-f440555879a0 }
+  - { partLabel: DB2, by-id: '/dev/disk/by-id/ata-ST4000DM000-1F2168_Z3025Q8K', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.9ab5addc-bad1-40ed-9eef-8ad4b9153903 }
+  - { partLabel: DB15, by-id: '/dev/disk/by-id/ata-ST8000DM004-2CX188_WCT0DH64', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.2c8a3d93-7bdf-4b62-85a6-5d21e254e017 }
+  - { partLabel: DB1, by-id: '/dev/disk/by-id/ata-ST4000DM000-1F2168_S300C5K0', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.337724c2-a479-4f1e-bcc8-70586d8636e1 }
+  - { partLabel: DB4, by-id: '/dev/disk/by-id/ata-ST4000DM000-1F2168_Z301ANE1', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b490f479-8332-470d-86a8-d441e7afe877 }
+  - { partLabel: DB10, by-id: '/dev/disk/by-id/ata-ST5000DM000-1FK178_W4J0EZ8J', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.93426b8c-d800-4713-9fc6-f48140818d42 }
+  - { partLabel: DB5, by-id: '/dev/disk/by-id/ata-ST5000DM000-1FK178_W4J067FX', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.158969c6-1b8d-4368-b214-df3704d9c52d }
+  - { partLabel: DB6, by-id: '/dev/disk/by-id/ata-ST4000DM000-1F2168_Z301BTH7', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.73c61236-bbce-460f-b658-2ac79cb3e30a }
+  - { partLabel: DB13, by-id: '/dev/disk/by-id/ata-ST8000AS0002-1NA17Z_Z840GYHW', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.8a6e95b7-f37a-4bdb-80a3-fedd09e83f37 }
+  - { partLabel: DB12, by-id: '/dev/disk/by-id/ata-ST8000AS0002-1NA17Z_Z840HMG7', path: /mnt, fs: ntfs, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.c54dff8c-32f2-4b17-b747-80e2f13d1a12 }
+  - { partLabel: MP14, by-id: '/dev/disk/by-id/ata-ST8000DM004-2CX188_WCT02RKH', path: /mnt, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP14 }
+  - { partLabel: MP18, by-id: '/dev/disk/by-id/ata-WDC_WD80EMAZ-00WJTA0_7SJHSPAW', path: /mnt, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP18 }
+  - { partLabel: MP03, by-id: '/dev/disk/by-id/ata-ST4000DM000-1F2168_Z301AGLS', path: /mnt, fs: ext4, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP03 }
 
 # when set to true, the mount tasks will recusively chown all files in /storage to 1000/1000
 chown_storage: false

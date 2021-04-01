@@ -10,7 +10,7 @@
 #   with_items: 
 #     - "{{ data_disks }}"
 
-- name: create ro directories
+- name: create ro directories on system
   file:
     path: "/merged/{{ item.poolFolder }}"
     state: directory
@@ -18,7 +18,7 @@
   loop: "{{ data_disks }}"
   when: item.state == 'mounted'
 
-- name: create main storage dir ro
+- name: create main storage dir ro if not already created
   file:
     path: "{{ storage_path }}"
     state: directory

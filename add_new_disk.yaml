@@ -4,23 +4,32 @@
   #   - 'vars/vault.yaml'
   roles: []
   tasks:
-    - name: create a new ext4 primary partition
-      community.general.parted:
-        device: "{{ item.id }}"
-        label: gpt
-        name: "{{ item.newPartLabel }}"
-        number: 1
-        part_start: "0%"
-        part_end: "100%"
-        state: present
-        fs_type: ext4
-      with_items:
-        - "{{ new_disk_prep }}"
+    # - name: create a new ext4 primary partition
+    #   community.general.parted:
+    #     device: "{{ item.id }}"
+    #     label: gpt
+    #     name: "{{ item.newPartLabel }}"
+    #     number: 1
+    #     part_start: "0%"
+    #     part_end: "100%"
+    #     state: present
+    #     fs_type: ext4
+    #   with_items:
+    #     - "{{ new_disk_prep }}"
+
+    # - name: unmount newly created partition
+    #   ansible.posix.mount:
+    #     src: "{{ item.id }}-part1"
+    #     fstype: "ext4"
+    #     # change to 'mounted' to auto mount
+    #     state: "mounted"
+    #   with_items:
+    #     - "{{ new_disk_prep }}"
 
     - name: Create a ext4 filesystem on partition overwriting everything
       community.general.filesystem:
         fstype: ext4
-        dev: "{{ item.id }}"
+        dev: "{{ item.id }}-part1"
         # opts: -cc
         force: yes
       with_items:
@@ -29,7 +38,7 @@
     - name: tmp mount the new partition
       ansible.posix.mount:
         name: "/tmp/{{ item.newPartLabel }}"
-        src: "{{ item.id }}1"
+        src: "{{ item.id }}-part1"
         fstype: "ext4"
         # change to 'mounted' to auto mount
         state: "mounted"

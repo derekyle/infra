@@ -13,6 +13,9 @@ add_remove_disks:
 install_containers:
 	ansible-playbook -b run.yaml --tags container-apps --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
+list_disk_ids:
+	lsblk |awk 'NR==1{print $0" DEVICE-ID(S)"}NR>1{dev=$1;gsub("[^[:alnum:]]","",dev);printf $0"\t\t";system("find /dev/disk/by-id -lname \"*"dev"\" -printf \" %p\"");print "";}'
+
 run_mergerfs:
 	ansible-playbook -b run.yaml --limit mediaserver --tags mergerfs --ask-become-pass --vault-password-file .vault-password
 
