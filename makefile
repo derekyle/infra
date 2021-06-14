@@ -1,7 +1,7 @@
 add_new_disk:
 	ansible-playbook -b -v add_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
-migrate_configs:
+migrate_disk:
 	ansible-playbook -b -vv migrate_data.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 init_mediaserver:
@@ -12,6 +12,12 @@ add_remove_disks:
 
 install_containers:
 	ansible-playbook -b run.yaml --tags container-apps --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
+install_samba:
+	ansible-playbook -b run.yaml --tags file-sharing --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
+install_telegraf:
+	ansible-playbook -b run.yaml --limit mediaserver --tags telegraf --ask-become-pass --vault-password-file .vault-password
 
 list_disk_ids:
 	lsblk |awk 'NR==1{print $0" DEVICE-ID(S)"}NR>1{dev=$1;gsub("[^[:alnum:]]","",dev);printf $0"\t\t";system("find /dev/disk/by-id -lname \"*"dev"\" -printf \" %p\"");print "";}'

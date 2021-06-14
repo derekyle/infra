@@ -1,44 +1,68 @@
 ---
-
-# - name: create /mnt points
-#   file:
-#     dest: "{{ item.path }}"
-#     state: directory
-#     owner: nobody
-#     group: nogroup
-#     mode: 0777
-#   with_items: 
-#     - "{{ data_disks }}"
-
-- name: create ro directories on system
-  file:
-    path: "/merged/{{ item.poolFolder }}"
-    state: directory
-    mode: "u=ro,g=ro,o=ro"
-  loop: "{{ data_disks }}"
-  when: item.state == 'mounted'
-
 - name: create main storage dir ro if not already created
   file:
     path: "{{ storage_path }}"
     state: directory
     mode: "u=ro,g=ro,o=ro"
 
-- name: initial mount pool disks
+- name: create /mnt point directories for part mounts
+  file:
+    dest: "/mnt/{{ item.serial }}"
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: "u=rw,g=rw,o=rw"
+  loop: "{{ data_disks }}"
+  when: item.state == 'mounted'
+
+- name: create PoolPart directory on disk if not there
+  file:
+    path: "/mnt/{{ item.serial }}/PoolPart.{{ item.serial }}"
+    state: directory
+    mode: "u=rwx,g=rwx,o=ro"
+    owner: 1000
+    group: 1000
+  loop: "{{ data_disks }}"
+  when: item.state == 'mounted'
+
+- name: create ro directories for bind mounts
+  file:
+    path: "/merged/PoolPart.{{ item.serial }}"
+    state: directory
+    mode: "u=ro,g=ro,o=ro"
+  loop: "{{ data_disks }}"
+  when: item.state == 'mounted'
+
+# - name: initial mount ext4 pool disks
+#   ansible.posix.mount:
+#     name: "/mnt/{{ item.partLabel }}"
+#     src: "{{ item.byid }}-part1"
+#     fstype: "{{ item.fs }}"
+#     opts: "{{ item.opts }}"
+#     # change to 'mounted' to auto mount
+#     state: "{{ item.state }}"
+#   loop: "{{ data_disks }}"
+#   when: item.fs != 'ext4'
+
+- name: create fstab entry for initial mounts
   ansible.posix.mount:
-    name: "{{ item.path }}/{{ item.partLabel }}"
-    src: "/dev/disk/by-label/{{ item.partLabel }}"
+    name: "/mnt/{{ item.serial }}"
+    src: "{{ item.byid }}-{{ item.partsuffix }}"
     fstype: "{{ item.fs }}"
     opts: "{{ item.opts }}"
     # change to 'mounted' to auto mount
     state: "{{ item.state }}"
   loop: "{{ data_disks }}"
-  # when: item.path != '/mnt/storage'
+  # when: item.fs != 'ntfs'
+
+# - name: rename old poolpart folders
+#   ansible.builtin.command: "mv /mnt/{{ item.serial }}/{{ item.poolFolder }} /mnt/{{ item.serial }}/PoolPart.{{ item.serial }}"
+#   loop: "{{ data_disks }}"
 
 - name: bind mount pool mounts
   ansible.posix.mount:
-    name: "/merged/{{ item.poolFolder }}"
-    src: "{{ item.path }}/{{ item.partLabel }}/{{ item.poolFolder }}"
+    name: "/merged/PoolPart.{{ item.serial }}"
+    src: "/mnt/{{ item.serial }}/PoolPart.{{ item.serial }}"
     fstype: "none"
     opts: "bind"
     # change to 'mounted' to auto mount
@@ -65,7 +89,16 @@
     group: 1000
   when: chown_storage == true
 
-
+- name: Mount mergerfs filesystem
+  become: true
+  mount:
+    fstype: fuse.mergerfs
+    src: "{{ ':'.join(item.branches | mandatory) }}"
+    path: "{{ item.path | mandatory }}"
+    opts: "{{ item.options | default('defaults') }}"
+    state: "{{ item.state | default('mounted') }}"
+    passno: "{{ item.passno | default('0') }}"
+  loop: "{{ mergerfs_fstab }}"
 # - name: mount mergerfs array
 #   with_items:
 #   - "{{ fstab_mergerfs }}"

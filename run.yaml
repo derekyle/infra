@@ -6,12 +6,14 @@
       - role: grog.package
       - role: geerlingguy.docker
       - role: geerlingguy.pip
-      - role: media_server_init
       - role: sprat.mergerfs
         tags:
           - disks
           - mergerfs
-      # - role: weareinteractive.docker
+      - role: media_server_init
+      - role: rossmcdonald.telegraf
+        tags:
+          - telegraf
     tasks:
       - name: remove ubuntu motd spam
         become: true

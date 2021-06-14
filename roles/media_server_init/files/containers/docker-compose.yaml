@@ -5,16 +5,18 @@ services:
     image: ghcr.io/linuxserver/plex
     container_name: plex
     # network_mode: host
+    # user: "1000"
     environment:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
+      - UMASK=022
       # - PLEX_CLAIM=claim-GUjXpgvoEXxRM6j1m7q-
     volumes:
-      - /config/plex:/config
-      - /storage/data/media/tv:/tv
-      - /storage/data/media/movies:/movies
-      - /storage/data/media/music:/music
+      - /config/plex:/config:rw,z
+      - /storage/data/media/tv:/tv:rw,z
+      - /storage/data/media/movies:/movies:rw,z
+      - /storage/data/media/music:/music:rw,z
     devices:
       - /dev/dri:/dev/dri
     ports:
@@ -29,12 +31,16 @@ services:
       - 32414:32414/udp
       - 32469:32469
     restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
   
   traefik:
     image: "traefik:v2.4"
     container_name: "traefik"
     command:
-      #- "--log.level=DEBUG"
+      - "--log.level=DEBUG"
+      - "--accesslog=true"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -58,36 +64,47 @@ services:
       - "/config/traefik:/etc/traefik"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
 
   qbittorrent:
     image: linuxserver/qbittorrent:4.1.9.99201911190849-6738-0b055d8ubuntu18.04.1-ls54
     container_name: qbittorrent
+    # user: "1000"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
       - WEBUI_PORT=8080
+      - UMASK=022
     volumes:
-      - /config/qbittorrent:/config
-      - /storage/data/torrents:/data/torrents
+      - /config/qbittorrent:/config:rw,z
+      - /storage/data/torrents:/data/torrents:rw,z
     ports:
+      - 8080:8080
       - 6881:6881
       - 6881:6881/udp
-      - 8080:8080
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qb.rule=Host(`qb.dc5.in`)"
       - "traefik.http.routers.qb.entrypoints=websecure"
       - "traefik.http.routers.qb.tls.certresolver=myresolver"
+      # - "traefik.port=8080"
+    logging:
+      options:
+        max-size: "1m"
 
   sonarr:
     image: ghcr.io/linuxserver/sonarr
     container_name: sonarr
+    # user: "1000"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
+      - UMASK=022
     volumes:
       - /config/sonarr:/config
       - /storage/data:/data
@@ -99,17 +116,22 @@ services:
       - "traefik.http.routers.sonarr.rule=Host(`sonarr.dc5.in`)"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+    logging:
+      options:
+        max-size: "1m"
   
   radarr:
     image: ghcr.io/linuxserver/radarr
     container_name: radarr
+    # user: "1000"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
+      - UMASK=022
     volumes:
-      - /config/radarr:/config
-      - /storage/data:/data
+      - /config/radarr:/config:rw,z
+      - /storage/data:/data:rw,z
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -118,16 +140,20 @@ services:
       - "traefik.http.routers.radarr.rule=Host(`radarr.dc5.in`)"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+    logging:
+      options:
+        max-size: "1m"
 
   tautulli:
     image: ghcr.io/linuxserver/tautulli
     container_name: tautulli
+    # user: "1000"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
     volumes:
-      - /config/tautulli:/config
+      - /config/tautulli:/config:rw,z
     ports:
       - 8181:8181
     restart: unless-stopped
@@ -136,17 +162,22 @@ services:
       - "traefik.http.routers.tautulli.rule=Host(`tautulli.dc5.in`)"
       - "traefik.http.routers.tautulli.entrypoints=websecure"
       - "traefik.http.routers.tautulli.tls.certresolver=myresolver"
+    logging:
+      options:
+        max-size: "1m"
 
   nzbget:
     image: ghcr.io/linuxserver/nzbget
     container_name: nzbget
+    # user: "1000"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
+      - UMASK=022
     volumes:
-      - /config/nzbget:/config
-      - /storage/data/usenet:/data/usenet
+      - /config/nzbget:/config:rw,z
+      - /storage/data/usenet:/data/usenet:rw,z
     ports:
       - 6789:6789
     restart: unless-stopped
@@ -155,3 +186,105 @@ services:
       - "traefik.http.routers.nzbget.rule=Host(`nzbget.dc5.in`)"
       - "traefik.http.routers.nzbget.entrypoints=websecure"
       - "traefik.http.routers.nzbget.tls.certresolver=myresolver"
+    logging:
+      options:
+        max-size: "1m"
+
+  nextcloud-db:
+    image: ghcr.io/linuxserver/mariadb
+    container_name: nextcloud-db
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD
+      - TZ=America/Los_Angeles
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD
+      # - REMOTE_SQL=http://URL1/your.sql,https://URL2/your.sql #optional
+    volumes:
+      - /config/nextcloud/database:/config
+    # ports:
+    #   - 3306:3306
+    restart: unless-stopped
+
+  nextcloud:
+    image: ghcr.io/linuxserver/nextcloud
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /config/nextcloud/config:/config
+      - /storage/Backup/nextcloud_data:/data
+    # ports:
+    #   - 9999:443
+    restart: unless-stopped
+    environment:
+      - MYSQL_PASSWORD
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=nextcloud-db
+      - NEXTCLOUD_ADMIN_USER
+      - NEXTCLOUD_ADMIN_PASSWORD
+      - REDIS_HOST=nextcloud-redis
+      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
+      # - NEXTCLOUD_TRUSTED_DOMAIN=cloud.dc5.in
+      # - TRUSTED_PROXIES=172.18.0.0/16
+      # - OVERWRITEPROTOCOL=https
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=HostHeader(`cloud.dc5.in`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
+      ## HTTP Services
+      # - "traefik.http.routers.nextcloud.service=nextcloud"
+      - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
+      - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://cloud.dc5.in
+      - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' dc5.in *.dc5.in
+      - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
+      - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.nextcloud.headers.stsPreload=true
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/
+      # - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
+      # - traefik.http.services.nextcloud.loadbalancer.server.port=443
+
+      
+
+  nextcloud-redis:
+    image: 'bitnami/redis:latest'
+    container_name: nextcloud-redis
+    environment:
+      - REDIS_PASSWORD
+  
+  # grafana:
+  #   image: grafana/grafana
+  #   container_name: grafana
+  #   # user: "1000"
+  #   ports:
+  #     - 3001:3000
+  #   volumes:
+  #     - /config/grafana:/var/lib/grafana
+  #   restart: unless-stopped
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.grafana.rule=Host(`grafana.dc5.in`)"
+  #     - "traefik.http.routers.grafana.entrypoints=websecure"
+  #     - "traefik.http.routers.grafana.tls.certresolver=myresolver"
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+      - 8086:8086
+    volumes:
+      - /config/influxdb/data:/var/lib/influxdb
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"

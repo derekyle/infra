@@ -25,7 +25,23 @@
     - container-apps
     - init
 
-- name: file-sharing nfs setup
+- name: file-sharing samba setup
   include: file-sharing.yml
   tags:
     - file-sharing
+    - init
+
+- name: copy over telegraf conf file
+  copy:
+    src: telegraf.conf
+    dest: /etc/telegraf/telegraf.conf
+    owner: telegraf
+    group: telegraf
+  tags:
+    - telegraf
+
+# - name: setup nfs share
+#   include: nfs.yml
+#   tags:
+#     - nfs
+#     - init

@@ -4,22 +4,38 @@
   #   - 'vars/vault.yaml'
   roles: []
   tasks:
-    - name: migrate list of directories
-      ansible.posix.synchronize:
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
-        rsync_opts:
-          - "--remove-source-files"
-      delegate_to: "{{ inventory_hostname }}"
-      with_items:
-        - "{{ migration_list }}"
 
-    # - name: Recursively change ownership of newly migrated files
-    #   ansible.builtin.file:
-    #     path: "{{ item.dest }}"
-    #     state: directory
-    #     recurse: yes
-    #     owner: 1000
-    #     group: 1000
-    #   with_items:
-    #     - "{{ migration_list }}"
+  # - name: migrate list of directories
+  #   ansible.posix.synchronize:
+  #     src: "{{ item.src }}"
+  #     dest: "{{ item.dest }}"
+  #     rsync_opts:
+  #       - "--remove-source-files"
+  #   delegate_to: "{{ inventory_hostname }}"
+  #   with_items:
+  #     - "{{ migration_list }}"
+
+  - name: create main storage dir ro if not already created
+    file:
+      path: "/temppool"
+      state: directory
+      mode: "u=ro,g=ro,o=ro"
+
+  - name: mount mergerfs temp array
+    mount:
+      name: "/temppool"
+      src: "/merged/PoolPart.*"
+      opts: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=mfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
+      fstype: "fuse.mergerfs"
+      # change to 'mounted' to auto mount
+      state: mounted
+
+  - name: remove drive from mergerfs pool
+    command: "mergerfs.ctl -m /temppool remove path /merged/PoolPart.{{ new_disk_prep[0].serial }}"
+
+  - name: long running rsync to temppool
+    command: cd /storage; nohup rsync --archive --info=progress2 /mnt/{{ new_disk_prep[0].serial }}/PoolPart.{{ new_disk_prep[0].serial }}/ /temppool &
+    async: 2592000               # 60*60*24*30 – 1 month
+    poll: 0
+  # - name: start transfer process
+    # command: "nohup rsync --archive --info=progress2 /mnt/ZL2637LS/PoolPart.ZL2637LS/ /temppool &"
