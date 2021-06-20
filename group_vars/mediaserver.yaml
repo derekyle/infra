@@ -58,7 +58,6 @@ package_list:
   - name: rsync
   - name: intel-gpu-tools
 
-
 #forward slashes at the end of src directory matter! with a slash syncs over the contents of the directory
 migration_list: []
   # - { src: '/mnt/M14/PoolPart.3fcd95f9-cfb2-4149-afe4-236596bdcb08/', dest: '/storage'}
