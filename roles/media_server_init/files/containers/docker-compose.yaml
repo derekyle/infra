@@ -34,6 +34,7 @@ services:
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
   
   traefik:
     image: "traefik:v2.4"
@@ -67,6 +68,7 @@ services:
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
 
   qbittorrent:
     image: linuxserver/qbittorrent:4.1.9.99201911190849-6738-0b055d8ubuntu18.04.1-ls54
@@ -95,6 +97,7 @@ services:
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
 
   sonarr:
     image: ghcr.io/linuxserver/sonarr
@@ -119,6 +122,7 @@ services:
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
   
   radarr:
     image: ghcr.io/linuxserver/radarr
@@ -143,6 +147,7 @@ services:
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
 
   tautulli:
     image: ghcr.io/linuxserver/tautulli
@@ -165,6 +170,7 @@ services:
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
 
   nzbget:
     image: ghcr.io/linuxserver/nzbget
@@ -189,6 +195,7 @@ services:
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
 
   nextcloud-db:
     image: ghcr.io/linuxserver/mariadb
@@ -207,6 +214,10 @@ services:
     # ports:
     #   - 3306:3306
     restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
 
   nextcloud:
     image: ghcr.io/linuxserver/nextcloud
@@ -250,6 +261,10 @@ services:
       - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/
       # - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
       # - traefik.http.services.nextcloud.loadbalancer.server.port=443
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
 
       
 
@@ -258,6 +273,10 @@ services:
     container_name: nextcloud-redis
     environment:
       - REDIS_PASSWORD
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
   
   # grafana:
   #   image: grafana/grafana
@@ -295,23 +314,34 @@ services:
     restart: unless-stopped
     ports:
       - 8086:8086
-    networks:
-      - monitoring
     volumes:
       - /config/influxdb/data:/var/lib/influxdb2
+      - /config/influxdb/config:/etc/influxdb2
     environment:
-      - INFLUXDB_DB=telegraf
-      - INFLUXDB_USER=telegraf
-      - INFLUXDB_ADMIN_ENABLED=true
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_PASSWORD
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=telegraf
+      - DOCKER_INFLUXDB_INIT_PASSWORD
+      - DOCKER_INFLUXDB_INIT_BUCKET=telegraf
+      - DOCKER_INFLUXDB_INIT_ORG=baremetal
+      # - INFLUXDB_ADMIN_ENABLED=true
+      # - INFLUXDB_ADMIN_USER=admin
+      # - INFLUXDB_ADMIN_PASSWORD
     logging:
       options:
         max-size: "1m"
+        max-file: "1"
 
   telegraf:
     image: telegraf
     container_name: telegraf
+    privileged: true
+    command:
+      - /bin/bash
+      - -c
+      - |
+        apt update
+        apt install -y smartmontools nvme-cli
+        telegraf
     restart: always
     # extra_hosts:
     #   - "influxdb:192.168.0.110"
@@ -319,12 +349,16 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      INFLUX_TOKEN: "${INFLUX_TOKEN}"
+      HOST_MOUNT_PREFIX: /rootfs
     volumes:
       - /config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
+      - /run/udev:/run/udev:ro
     logging:
       options:
         max-size: "1m"
+        max-file: "1"

@@ -11,9 +11,9 @@
           - disks
           - mergerfs
       - role: media_server_init
-      - role: rossmcdonald.telegraf
-        tags:
-          - telegraf
+      # - role: rossmcdonald.telegraf
+      #   tags:
+      #     - telegraf
     tasks:
       - name: remove ubuntu motd spam
         become: true

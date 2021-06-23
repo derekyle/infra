@@ -99,6 +99,20 @@
     state: "{{ item.state | default('mounted') }}"
     passno: "{{ item.passno | default('0') }}"
   loop: "{{ mergerfs_fstab }}"
+
+- name: Create symbolic links to disk by serial
+  ansible.builtin.file:
+    src: '{{ item.byid }}'
+    dest: '/disk-by-serial/{{ item.serial }}'
+    state: link
+  loop: "{{ data_disks }}"
+
+- name: Set hddtemp daemon to start on boot
+  ansible.builtin.service:
+    name: hddtemp
+    state: started
+    enabled: yes
+
 # - name: mount mergerfs array
 #   with_items:
 #   - "{{ fstab_mergerfs }}"
