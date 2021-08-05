@@ -9,7 +9,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - VERSION=docker
+      - VERSION=latest
       - UMASK=022
       # - PLEX_CLAIM=claim-GUjXpgvoEXxRM6j1m7q-
     volumes:
@@ -93,6 +93,8 @@ services:
       - "traefik.http.routers.qb.rule=Host(`qb.dc5.in`)"
       - "traefik.http.routers.qb.entrypoints=websecure"
       - "traefik.http.routers.qb.tls.certresolver=myresolver"
+      - "traefik.http.routers.qbittorrent.tls.domains[0].main=qb.dc5.in"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8000"
       # - "traefik.port=8080"
     logging:
       options:
@@ -144,6 +146,29 @@ services:
       - "traefik.http.routers.radarr.rule=Host(`radarr.dc5.in`)"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+  lidarr:
+    image: ghcr.io/linuxserver/lidarr
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /config/lidarr:/config
+      - /storage/data:/data
+    ports:
+      - 8686:8686
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.dc5.in`)"
+      - "traefik.http.routers.lidarr.entrypoints=websecure"
+      - "traefik.http.routers.lidarr.tls.certresolver=myresolver"
+    restart: unless-stopped
     logging:
       options:
         max-size: "1m"
@@ -362,3 +387,4 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
+  
