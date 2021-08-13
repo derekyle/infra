@@ -215,7 +215,7 @@ services:
       - 6789:6789
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
+      # - "traefik.enable=true"
       - "traefik.http.routers.nzbget.rule=Host(`nzbget.dc5.in`)"
       - "traefik.http.routers.nzbget.entrypoints=websecure"
       - "traefik.http.routers.nzbget.tls.certresolver=myresolver"
