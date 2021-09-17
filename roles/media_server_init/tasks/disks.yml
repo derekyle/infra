@@ -70,15 +70,15 @@
   loop: "{{ data_disks }}"
   # when: item.path != '/mnt/storage'
 
-- name: Delete empty bind mount directories of unmounted disks
-  ansible.builtin.command: "rmdir /merged/{{ item.poolFolder }}"
-  loop: "{{ data_disks }}"
-  when: item.state == 'unmounted'
+# - name: Delete empty bind mount directories of unmounted disks
+#   ansible.builtin.command: "rmdir /merged/{{ item.poolFolder }}"
+#   loop: "{{ data_disks }}"
+#   when: item.state == 'unmounted'
 
-- name: Delete empty mount directories of unmounted disks
-  ansible.builtin.command: "rmdir /mnt/{{ item.partLabel }}"
-  loop: "{{ data_disks }}"
-  when: item.state == 'unmounted'
+# - name: Delete empty mount directories of unmounted disks
+#   ansible.builtin.command: "rmdir /mnt/{{ item.partLabel }}"
+#   loop: "{{ data_disks }}"
+#   when: item.state == 'unmounted'
 
 - name: Recursively change ownership of storage pool
   ansible.builtin.file:
@@ -100,16 +100,16 @@
     passno: "{{ item.passno | default('0') }}"
   loop: "{{ mergerfs_fstab }}"
 
-# - name: Create fast disks pool
-#   become: true
+# - name: mount mergerfs array
+#   with_items:
+#   - "{{ fstab_mergerfs }}"
 #   mount:
-#     fstype: fuse.mergerfs
-#     src: "{{ ':'.join(item.branches | mandatory) }}"
-#     path: "{{ item.path | mandatory }}"
-#     opts: "{{ item.options | default('defaults') }}"
-#     state: "mounted"
-#     passno: "{{ item.passno | default('0') }}"
-#   loop: "{{ data_disks }}"
+#     name: "{{ item.mountpoint }}"
+#     src: "{{ item.source }}"
+#     opts: "{{ item.opts }}"
+#     fstype: "{{ item.fs }}"
+#     # change to 'mounted' to auto mount
+#     state: mounted
 
 # - name: Create slow disks pool
 #   become: true

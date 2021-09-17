@@ -198,6 +198,25 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
+  
+  ombi:
+    image: ghcr.io/linuxserver/ombi
+    container_name: ombi
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+      # - BASE_URL=/ombi #optional
+    volumes:
+      - /path/to/appdata/config:/config
+    ports:
+      - 3579:3579
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ombi.rule=Host(`ombi.dc5.in`)"
+      - "traefik.http.routers.ombi.entrypoints=websecure"
+      - "traefik.http.routers.ombi.tls.certresolver=myresolver"
+    restart: unless-stopped
 
   nzbget:
     image: ghcr.io/linuxserver/nzbget
@@ -368,7 +387,7 @@ services:
       - -c
       - |
         apt update
-        apt install -y smartmontools nvme-cli
+        apt install -y smartmontools nvme-cli udev
         telegraf
     restart: always
     # extra_hosts:
@@ -386,6 +405,42 @@ services:
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
       - /run/udev:/run/udev:ro
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+# docker run --rm -i -v /mnt/Z3025Q8K/PoolPart.Z3025Q8K:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
+  transfer:
+    image: instrumentisto/rsync-ssh
+    volumes:
+      - /mnt/Z3025Q8K/PoolPart.Z3025Q8K:/sourcedisk
+      - /temppool:/destinationpool
+    entrypoint: rsync
+    command:
+      - --archive 
+      - --progress
+      - --hard-links
+      - /sourcedisk/
+      - /destinationpool
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+# docker run --rm -i -v /mnt/S300C5K0/PoolPart.S300C5K0:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
+  transfer2:
+    image: instrumentisto/rsync-ssh
+    volumes:
+      - /mnt/S300C5K0/PoolPart.S300C5K0:/sourcedisk
+      - /temppool:/destinationpool
+    entrypoint: rsync
+    command:
+      - --archive 
+      - --progress
+      - --hard-links
+      - /sourcedisk/ 
+      - /destinationpool
     logging:
       options:
         max-size: "1m"
