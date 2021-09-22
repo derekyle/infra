@@ -9,8 +9,8 @@
   file:
     dest: "/mnt/{{ item.serial }}"
     state: directory
-    owner: 1000
-    group: 1000
+    owner: "1000"
+    group: "1000"
     mode: "u=rw,g=rw,o=rw"
   loop: "{{ data_disks }}"
   when: item.state == 'mounted'
@@ -20,8 +20,8 @@
     path: "/mnt/{{ item.serial }}/PoolPart.{{ item.serial }}"
     state: directory
     mode: "u=rwx,g=rwx,o=ro"
-    owner: 1000
-    group: 1000
+    owner: "1000"
+    group: "1000"
   loop: "{{ data_disks }}"
   when: item.state == 'mounted'
 

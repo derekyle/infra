@@ -11,6 +11,9 @@
           - disks
           - mergerfs
       - role: media_server_init
+      - role: telegraf
+        tags:
+          - telegraf
       # - role: rossmcdonald.telegraf
       #   tags:
       #     - telegraf
@@ -25,3 +28,12 @@
           - 95-hwe-eol
           - 10-help-text
         when: ansible_distribution == 'Ubuntu'
+
+      - name: copy over telegraf conf file
+        copy:
+          src: telegraf.conf
+          dest: /etc/telegraf/telegraf.conf
+          owner: telegraf
+          group: telegraf
+        tags:
+          - telegraf

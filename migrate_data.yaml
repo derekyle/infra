@@ -15,27 +15,35 @@
   #   with_items:
   #     - "{{ migration_list }}"
 
-  - name: create main storage dir ro if not already created
-    file:
-      path: "/temppool"
-      state: directory
-      mode: "u=ro,g=ro,o=ro"
+  # - name: create temppool storage dir ro if not already created
+  #   file:
+  #     path: "/temppool"
+  #     state: directory
+  #     mode: "u=ro,g=ro,o=ro"
 
-  - name: mount mergerfs temp array
-    mount:
-      name: "/temppool"
-      src: "/merged/PoolPart.*"
-      opts: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=mfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
-      fstype: "fuse.mergerfs"
-      # change to 'mounted' to auto mount
-      state: mounted
+  # - name: mount mergerfs temp array
+  #   mount:
+  #     name: "/temppool"
+  #     src: "/merged/PoolPart.*"
+  #     opts: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=mfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
+  #     fstype: "fuse.mergerfs"
+  #     # change to 'mounted' to auto mount
+  #     state: mounted
 
   - name: remove drive from mergerfs pool
-    command: "mergerfs.ctl -m /temppool remove path /merged/PoolPart.{{ new_disk_prep[0].serial }}"
+    command: "mergerfs.ctl -m /temppool remove path /merged/PoolPart.{{ item.serial }}"
+    loop: "{{ new_disk_prep }}"
 
-  - name: long running rsync to temppool
-    command: cd /storage; nohup rsync --archive --info=progress2 /mnt/{{ new_disk_prep[0].serial }}/PoolPart.{{ new_disk_prep[0].serial }}/ /temppool &
-    async: 2592000               # 60*60*24*30 – 1 month
-    poll: 0
-  # - name: start transfer process
-    # command: "nohup rsync --archive --info=progress2 /mnt/ZL2637LS/PoolPart.ZL2637LS/ /temppool &"
+  - name: start rsync containers
+    community.docker.docker_container:
+      name: "transfer_{{ item.serial }}"
+      state: started
+      image: instrumentisto/rsync-ssh
+      entrypoint: rsync
+      command: --archive --progress --hard-links /sourcedisk/ /destinationpool
+      volumes:
+        - "/mnt/{{ item.serial }}/PoolPart.{{ item.serial }}:/sourcedisk"
+        - /temppool:/destinationpool
+    loop: "{{ new_disk_prep }}"
+
+  

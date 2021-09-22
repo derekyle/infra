@@ -405,44 +405,122 @@ services:
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
       - /run/udev:/run/udev:ro
+      - /storage:/storage:ro
+      - /proc/self/mounts:/proc/self/mounts
+      # - /merged:/merged:ro
     logging:
       options:
         max-size: "1m"
         max-file: "1"
 
 # docker run --rm -i -v /mnt/Z3025Q8K/PoolPart.Z3025Q8K:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
-  transfer:
-    image: instrumentisto/rsync-ssh
-    volumes:
-      - /mnt/Z3025Q8K/PoolPart.Z3025Q8K:/sourcedisk
-      - /temppool:/destinationpool
-    entrypoint: rsync
-    command:
-      - --archive 
-      - --progress
-      - --hard-links
-      - /sourcedisk/
-      - /destinationpool
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
+#   transfer1:
+#     image: instrumentisto/rsync-ssh
+#     container_name: transfer1
+#     volumes:
+#       - /mnt/2SG53JXJ/PoolPart.2SG53JXJ:/sourcedisk
+#       - /temppool:/destinationpool
+#     entrypoint: rsync
+#     command:
+#       - --archive 
+#       - --progress
+#       - --hard-links
+#       - /sourcedisk/
+#       - /destinationpool
+#     logging:
+#       options:
+#         max-size: "1m"
+#         max-file: "1"
 
-# docker run --rm -i -v /mnt/S300C5K0/PoolPart.S300C5K0:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
-  transfer2:
-    image: instrumentisto/rsync-ssh
-    volumes:
-      - /mnt/S300C5K0/PoolPart.S300C5K0:/sourcedisk
-      - /temppool:/destinationpool
-    entrypoint: rsync
-    command:
-      - --archive 
-      - --progress
-      - --hard-links
-      - /sourcedisk/ 
-      - /destinationpool
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
+# # docker run --rm -i -v /mnt/S300C5K0/PoolPart.S300C5K0:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
+#   transfer2:
+#     image: instrumentisto/rsync-ssh
+#     container_name: transfer2
+#     volumes:
+#       - /mnt/W4J0EZ8J/PoolPart.W4J0EZ8J:/sourcedisk
+#       - /temppool:/destinationpool
+#     entrypoint: rsync
+#     command:
+#       - --archive 
+#       - --progress
+#       - --hard-links
+#       - /sourcedisk/ 
+#       - /destinationpool
+#     logging:
+#       options:
+#         max-size: "1m"
+#         max-file: "1"
+  
+#   transfer3:
+#     image: instrumentisto/rsync-ssh
+#     container_name: transfer3
+#     volumes:
+#       - /mnt/Z301BTH7/PoolPart.Z301BTH7:/sourcedisk
+#       - /temppool:/destinationpool
+#     entrypoint: rsync
+#     command:
+#       - --archive 
+#       - --progress
+#       - --hard-links
+#       - /sourcedisk/ 
+#       - /destinationpool
+#     logging:
+#       options:
+#         max-size: "1m"
+#         max-file: "1"
+
+  # transfer4:
+  #   image: instrumentisto/rsync-ssh
+  #   container_name: transfer4
+  #   volumes:
+  #     - /mnt/Z301ANE1/PoolPart.Z301ANE1:/sourcedisk
+  #     - /temppool:/destinationpool
+  #   entrypoint: rsync
+  #   command:
+  #     - --archive 
+  #     - --progress
+  #     - --hard-links
+  #     - /sourcedisk/ 
+  #     - /destinationpool
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
+
+  
+  # transfer5:
+  #   image: instrumentisto/rsync-ssh
+  #   container_name: transfer5
+  #   volumes:
+  #     - /mnt/W4J067FX/PoolPart.W4J067FX:/sourcedisk
+  #     - /temppool:/destinationpool
+  #   entrypoint: rsync
+  #   command:
+  #     - --archive 
+  #     - --progress
+  #     - --hard-links
+  #     - /sourcedisk/ 
+  #     - /destinationpool
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
+
+  # transfer6:
+  #   image: instrumentisto/rsync-ssh
+  #   container_name: transfer6
+  #   volumes:
+  #     - /mnt/W4J0KTWJ/PoolPart.W4J0KTWJ:/sourcedisk
+  #     - /temppool:/destinationpool
+  #   entrypoint: rsync
+  #   command:
+  #     - --archive 
+  #     - --progress
+  #     - --hard-links
+  #     - /sourcedisk/ 
+  #     - /destinationpool
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
   
