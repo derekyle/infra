@@ -378,40 +378,40 @@ services:
         max-size: "1m"
         max-file: "1"
 
-  telegraf:
-    image: telegraf
-    container_name: telegraf
-    privileged: true
-    command:
-      - /bin/bash
-      - -c
-      - |
-        apt update
-        apt install -y smartmontools nvme-cli udev
-        telegraf
-    restart: always
-    # extra_hosts:
-    #   - "influxdb:192.168.0.110"
-    environment:
-      HOST_PROC: /rootfs/proc
-      HOST_SYS: /rootfs/sys
-      HOST_ETC: /rootfs/etc
-      INFLUX_TOKEN: "${INFLUX_TOKEN}"
-      HOST_MOUNT_PREFIX: /rootfs
-    volumes:
-      - /config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /sys:/rootfs/sys:ro
-      - /proc:/rootfs/proc:ro
-      - /etc:/rootfs/etc:ro
-      - /run/udev:/run/udev:ro
-      - /storage:/storage:ro
-      - /proc/self/mounts:/proc/self/mounts
-      # - /merged:/merged:ro
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
+  # telegraf:
+  #   image: telegraf
+  #   container_name: telegraf
+  #   privileged: true
+  #   command:
+  #     - /bin/bash
+  #     - -c
+  #     - |
+  #       apt update
+  #       apt install -y smartmontools nvme-cli udev
+  #       telegraf
+  #   restart: always
+  #   # extra_hosts:
+  #   #   - "influxdb:192.168.0.110"
+  #   environment:
+  #     HOST_PROC: /rootfs/proc
+  #     HOST_SYS: /rootfs/sys
+  #     HOST_ETC: /rootfs/etc
+  #     INFLUX_TOKEN: "${INFLUX_TOKEN}"
+  #     HOST_MOUNT_PREFIX: /rootfs
+  #   volumes:
+  #     - /config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /sys:/rootfs/sys:ro
+  #     - /proc:/rootfs/proc:ro
+  #     - /etc:/rootfs/etc:ro
+  #     - /run/udev:/run/udev:ro
+  #     - /storage:/storage:ro
+  #     - /proc/self/mounts:/proc/self/mounts
+  #     # - /merged:/merged:ro
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
 
 # docker run --rm -i -v /mnt/Z3025Q8K/PoolPart.Z3025Q8K:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
 #   transfer1:

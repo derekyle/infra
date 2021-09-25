@@ -1,5 +1,5 @@
-add_new_disk:
-	ansible-playbook -b -v add_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+prep_new_disk:
+	ansible-playbook -b -v prep_add_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 migrate_disk:
 	ansible-playbook -b -v migrate_data.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
@@ -7,7 +7,7 @@ migrate_disk:
 init_mediaserver:
 	ansible-playbook -b run.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
-add_remove_disks:
+add_new_disk:
 	ansible-playbook -b run.yaml --tags disks --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 install_containers:

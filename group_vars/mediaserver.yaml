@@ -12,12 +12,12 @@ new_disk_prep:
   #   serial: W4J0EZ8J
   # - diskid: /dev/disk/by-id/wwn-0x5000c500660dde31
   #   serial: Z301BTH7
-  - diskid: 
-    serial: Z301ANE1
-  - diskid: 
-    serial: W4J067FX
-  - diskid: 
-    serial: W4J0KTWJ
+  # - diskid: /dev/disk/by-id/wwn-0x5000c5006619cb73
+  #   serial: Z301ANE1
+  # - diskid: /dev/disk/by-id/wwn-0x5000c5007c4e624e
+  #   serial: W4J067FX
+  # - diskid: /dev/disk/by-id/wwn-0x5000c50082bdd581
+  #   serial: W4J0KTWJ
 
 disk_to_migrate: S300C5K0
 
@@ -32,13 +32,13 @@ data_disks:
   - { serial: '2SG53JXJ', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000cca27dc2532a', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'ZL2637LS', size: '14.6T', byid: '/dev/disk/by-id/wwn-0x5000c500c60f5838', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'WCT0DX30', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c500acd2f184', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
-  - { serial: 'W4J0KTWJ', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c50082bdd581', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true }
+  - { serial: 'W4J0KTWJ', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c50082bdd581', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'Z3025Q8K', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c50079015d1a', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'WCT0DH64', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c500ad23afe8', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'S300C5K0', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c5006d93775c', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
-  - { serial: 'Z301ANE1', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c5006619cb73', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true }
+  - { serial: 'Z301ANE1', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c5006619cb73', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'W4J0EZ8J', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c5008241958f', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
-  - { serial: 'W4J067FX', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c5007c4e624e', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true }
+  - { serial: 'W4J067FX', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c5007c4e624e', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'Z301BTH7', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c500660dde31', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'Z840GYHW', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c5009104a265', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'Z840HMG7', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c50091101f86', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
@@ -47,30 +47,6 @@ data_disks:
   - { serial: 'Z301AGLS', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c50065fb324a', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: '9RG820KC', size: '12.8T', byid: '/dev/disk/by-id/wwn-0x5000cca264c3aa8b', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'ZA2DLYYP', size: '9.1T', byid: '/dev/disk/by-id/wwn-0x5000c500c6dc945f', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
-
-fast_disks:
-  - { serial: '1906E1E8EBB5', size: '1T', byid: '/dev/disk/by-id/wwn-0x500a0751e1e8ebb5', partsuffix: 'part1', fs: ext4, type: ssd, opts: defaults, state: mounted, content: true }
-    
-slow_disks:
-  - { serial: '1906E1E8EBB5', size: '1T', byid: '/dev/disk/by-id/wwn-0x500a0751e1e8ebb5', partsuffix: 'part1', fs: ext4, type: ssd, opts: defaults, state: mounted, content: true }
-  - { partLabel: M16, serial: '2SG53JXJ', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000cca27dc2532a', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b1429157-045f-4b2c-97a7-1ac056959407 }
-  - { partLabel: DB17, serial: 'ZL2637LS', size: '14.6T', byid: '/dev/disk/by-id/wwn-0x5000c500c60f5838', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.3b15b9f9-e29f-4f83-975c-b803c59e5eff }
-  - { partLabel: DB14, serial: 'WCT0DX30', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c500acd2f184', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.1ec001b7-521f-4a0c-a9e8-9612808ad3ec }
-  - { partLabel: DB11, serial: 'W4J0KTWJ', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c50082bdd581', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.f943092c-2297-4715-ac7c-f440555879a0 }
-  - { partLabel: DB2, serial: 'Z3025Q8K', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c50079015d1a', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.9ab5addc-bad1-40ed-9eef-8ad4b9153903 }
-  - { partLabel: DB15, serial: 'WCT0DH64', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c500ad23afe8', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.2c8a3d93-7bdf-4b62-85a6-5d21e254e017 }
-  - { partLabel: DB1, serial: 'S300C5K0', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c5006d93775c', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.337724c2-a479-4f1e-bcc8-70586d8636e1 }
-  - { partLabel: DB4, serial: 'Z301ANE1', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c5006619cb73', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.b490f479-8332-470d-86a8-d441e7afe877 }
-  - { partLabel: DB10, serial: 'W4J0EZ8J', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c5008241958f', partsuffix: 'part1', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.93426b8c-d800-4713-9fc6-f48140818d42 }
-  - { partLabel: DB5, serial: 'W4J067FX', size: '4.6T', byid: '/dev/disk/by-id/wwn-0x5000c5007c4e624e', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.158969c6-1b8d-4368-b214-df3704d9c52d }
-  - { partLabel: DB6, serial: 'Z301BTH7', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c500660dde31', partsuffix: 'part2', fs: ntfs, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.73c61236-bbce-460f-b658-2ac79cb3e30a }
-  - { partLabel: DB13, serial: 'Z840GYHW', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c5009104a265', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.8a6e95b7-f37a-4bdb-80a3-fedd09e83f37 }
-  - { partLabel: DB12, serial: 'Z840HMG7', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c50091101f86', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.c54dff8c-32f2-4b17-b747-80e2f13d1a12 }
-  - { partLabel: MP14, serial: 'WCT02RKH', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c500aa8efad1', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP14 }
-  - { partLabel: MP18, serial: '7SJHSPAW', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000cca252e3597f', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP18 }
-  - { partLabel: MP03, serial: 'Z301AGLS', size: '3.7T', byid: '/dev/disk/by-id/wwn-0x5000c50065fb324a', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.MP03 }
-  - { partLabel: 9RG820KC, serial: '9RG820KC', size: '12.8T', byid: '/dev/disk/by-id/wwn-0x5000cca264c3aa8b', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.9RG820KC }
-  - { serial: 'ZA2DLYYP', size: '9.1T', byid: '/dev/disk/by-id/wwn-0x5000c500c6dc945f', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true, poolFolder: PoolPart.ZA2DLYYP }
 
 # when set to true, the mount tasks will recusively chown all files in /storage to 1000/1000
 chown_storage: false
