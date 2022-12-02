@@ -1,0 +1,13 @@
+---
+  - hosts: mediaserver
+    vars_files:
+      - 'vars/vault.yaml'
+    
+    tasks:
+      - name: Pull to update and restart
+        community.docker.docker_compose:
+          project_src: /config
+          pull: yes
+          state: present
+          restarted: yes
+        register: output

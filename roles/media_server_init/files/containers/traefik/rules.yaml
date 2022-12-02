@@ -14,18 +14,22 @@ http:
       service: service-homeassistant
       tls:
         certResolver: myresolver
-    # router-octoprint:
-    #   entryPoints:
-    #     - websecure
-    #   rule: Host(`octoprint.dc5.in`)
-    #   service: service-octoprint
-    #   tls:
-    #     certResolver: myresolver
+    router-unifi:
+      entryPoints:
+        - websecure
+      rule: Host(`unifi.dc5.in`)
+      service: service-unifi
+      tls:
+        certResolver: myresolver
   services:
     service-homeassistant:
       loadBalancer:
         servers:
         - url: "http://192.168.1.100:8123"
+    service-unifi:
+      loadBalancer:
+        servers:
+        - url: "https://192.168.1.100:8443"
     # service-octoprint:
     #   loadBalancer:
     #     servers:

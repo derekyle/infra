@@ -1,6 +1,9 @@
 roles:
   - src: geerlingguy.docker
   - src: geerlingguy.pip
+  # - src: lifeofguenter.nut
+  - src: geerlingguy.hdparm
+  - src: andrewrothstein.go
   # - src: rossmcdonald.telegraf
 # - src: geerlingguy.security
 # - src: geerlingguy.ntp

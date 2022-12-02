@@ -1,6 +1,9 @@
 prep_new_disk:
 	ansible-playbook -b -v prep_add_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
+update_containers:
+	ansible-playbook -b -v update_containers.yaml --ask-become-pass --vault-password-file .vault-password
+
 migrate_disk:
 	ansible-playbook -b -v migrate_data.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
@@ -12,6 +15,9 @@ add_new_disk:
 
 install_containers:
 	ansible-playbook -b run.yaml --tags container-apps --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
+install_nut:
+	ansible-playbook -b run.yaml --tags nut --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 install_samba:
 	ansible-playbook -b run.yaml --tags file-sharing --limit mediaserver --ask-become-pass --vault-password-file .vault-password

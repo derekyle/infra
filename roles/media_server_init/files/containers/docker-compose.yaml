@@ -1,8 +1,32 @@
 version: "2.1"
 
 services:
+  
+  frigate:
+    container_name: frigate
+    privileged: true # this may not be necessary for all setups
+    restart: unless-stopped
+    image: blakeblackshear/frigate:stable
+    shm_size: "64mb" # update for your cameras based on calculation above
+    devices:
+      # - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
+      # - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+      -  /dev/dri:/dev/dri # for intel hwaccel, needs to be updated for your hardware
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /config/frigate/config.yaml:/config/config.yml:ro
+      - /storage/security:/media/frigate
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 2000000000
+    ports:
+      - "5000:5000"
+      - "1935:1935" # RTMP feeds
+    environment:
+      - FRIGATE_RTSP_PASSWORD
   plex:
-    image: ghcr.io/linuxserver/plex
+    image: lscr.io/linuxserver/plex:latest
     container_name: plex
     # network_mode: host
     # user: "1000"
@@ -104,7 +128,7 @@ services:
         max-file: "1"
 
   sonarr:
-    image: ghcr.io/linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     # user: "1000"
     environment:
@@ -129,7 +153,7 @@ services:
         max-file: "1"
   
   radarr:
-    image: ghcr.io/linuxserver/radarr
+    image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     # user: "1000"
     environment:
@@ -154,7 +178,7 @@ services:
         max-file: "1"
 
   lidarr:
-    image: ghcr.io/linuxserver/lidarr
+    image: lscr.io/linuxserver/lidarr:latest
     container_name: lidarr
     environment:
       - PUID=1000
@@ -177,7 +201,7 @@ services:
         max-file: "1"
 
   tautulli:
-    image: ghcr.io/linuxserver/tautulli
+    image: lscr.io/linuxserver/tautulli:latest
     container_name: tautulli
     # user: "1000"
     environment:
@@ -200,7 +224,7 @@ services:
         max-file: "1"
   
   ombi:
-    image: ghcr.io/linuxserver/ombi
+    image: lscr.io/linuxserver/ombi:latest
     container_name: ombi
     environment:
       - PUID=1000
@@ -219,7 +243,7 @@ services:
     restart: unless-stopped
 
   nzbget:
-    image: ghcr.io/linuxserver/nzbget
+    image: lscr.io/linuxserver/nzbget:latest
     container_name: nzbget
     # user: "1000"
     environment:
@@ -245,7 +269,7 @@ services:
         max-file: "1"
 
   nextcloud-db:
-    image: ghcr.io/linuxserver/mariadb
+    image: lscr.io/linuxserver/mariadb:latest
     container_name: nextcloud-db
     environment:
       - PUID=1000
@@ -267,19 +291,12 @@ services:
         max-file: "1"
 
   nextcloud:
-    image: ghcr.io/linuxserver/nextcloud
+    image: lscr.io/linuxserver/nextcloud:latest
     container_name: nextcloud
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
-    volumes:
-      - /config/nextcloud/config:/config
-      - /storage/Backup/nextcloud_data:/data
-    # ports:
-    #   - 9999:443
-    restart: unless-stopped
-    environment:
       - MYSQL_PASSWORD
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
@@ -291,6 +308,12 @@ services:
       # - NEXTCLOUD_TRUSTED_DOMAIN=cloud.dc5.in
       # - TRUSTED_PROXIES=172.18.0.0/16
       # - OVERWRITEPROTOCOL=https
+    volumes:
+      - /config/nextcloud/config:/config
+      - /storage/Backup/nextcloud_data:/data
+    # ports:
+    #   - 9999:443
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nextcloud.rule=HostHeader(`cloud.dc5.in`)"

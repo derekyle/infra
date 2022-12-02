@@ -1,0 +1,23 @@
+mqtt:
+  host: 192.168.1.2
+  user: frigate
+  password: kenE42nneidGTekwn321
+
+# detectors:
+#   coral:
+#     type: edgetpu
+#     device: usb
+
+cameras:
+  front_door: # <------ Name the camera
+    ffmpeg:
+      inputs:
+        - path: rtsp://192.168.1.119/live # <----- Update for your camera
+          roles:
+            - detect
+            - rtmp
+    rtmp:
+      enabled: False # <-- RTMP should be disabled if your stream is not H264
+    detect:
+      width: 1280 # <---- update for your camera's resolution
+      height: 720 # <---- update for your camera's resolution

@@ -17,9 +17,9 @@ new_disk_prep:
   # - diskid: /dev/disk/by-id/wwn-0x5000c5007c4e624e
   #   serial: W4J067FX
   # - diskid: /dev/disk/by-id/wwn-0x5000c50082bdd581
-  #   serial: W4J0KTWJ
+  #   serial: W4J0KTWJ`
 
-disk_to_migrate: S300C5K0
+# disk_to_migrate: S300C5K0
 
 # command to list out disks by label and device id
 # lsblk |awk 'NR==1{print $0" DEVICE-ID(S)"}NR>1{dev=$1;gsub("[^[:alnum:]]","",dev);printf $0"\t\t";system("find /dev/disk/by-id -lname \"*"dev"\" -printf \" %p\"");print "";}'
@@ -78,3 +78,23 @@ migration_list: []
 
 # ntfs_migration:
 #   - { mount: '/mnt', }
+  
+
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000cca27dc2532a ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c500c60f5838 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c500acd2f184 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c50082bdd581 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c50079015d1a ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c500ad23afe8 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c5006d93775c ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c5006619cb73 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c5008241958f ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c5007c4e624e ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c500660dde31 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c5009104a265 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c50091101f86 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c500aa8efad1 ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000cca252e3597f ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c50065fb324a ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000cca264c3aa8b ;\
+# sudo hdparm -y /dev/disk/by-id/wwn-0x5000c500c6dc945f ;

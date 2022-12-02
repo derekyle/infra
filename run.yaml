@@ -14,6 +14,28 @@
       - role: telegraf
         tags:
           - telegraf
+      - role: andrewrothstein.go
+        tags:
+          - hdidle
+      - role: geerlingguy.hdparm
+        vars:
+          hdparm_manage_config: true
+          hdparm_devices:
+          - dev: /dev/sdn
+            options:
+              - "spindown_time = 120"
+        tags: 
+          - hdparm
+      # - role: lifeofguenter.nut
+      #   tags:
+      #     - nut
+      #   name: tripp
+      #   nut_driver: usbhid-ups
+      #   device: /dev/usb/hiddev0
+      #   nut_desc: Tripp Lite 
+      #   nut_vendorid: 09ae
+      #   nut_productid: 3016
+
       # - role: rossmcdonald.telegraf
       #   tags:
       #     - telegraf
@@ -37,3 +59,9 @@
           group: telegraf
         tags:
           - telegraf
+
+      - name: install hd-idle into go path
+        command:
+          cmd: go install github.com/adelolmo/hd-idle@latest
+        tags:
+          - hdidle
