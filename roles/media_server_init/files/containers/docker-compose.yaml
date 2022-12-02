@@ -16,15 +16,14 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /config/frigate/config.yaml:/config/config.yml:ro
       - /storage/security:/media/frigate
-      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
-        target: /tmp/cache
-        tmpfs:
-          size: 2000000000
+    tmpfs: /tmp/cache
     ports:
       - "5000:5000"
       - "1935:1935" # RTMP feeds
     environment:
       - FRIGATE_RTSP_PASSWORD
+
+
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex

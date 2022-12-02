@@ -1,5 +1,5 @@
 mqtt:
-  host: 192.168.1.2
+  host: 192.168.1.100
   user: frigate
   password: kenE42nneidGTekwn321
 
@@ -7,6 +7,9 @@ mqtt:
 #   coral:
 #     type: edgetpu
 #     device: usb
+
+logger:
+  default: debug
 
 cameras:
   front_door: # <------ Name the camera
