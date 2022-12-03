@@ -24,6 +24,7 @@ services:
       - FRIGATE_RTSP_PASSWORD
       - FRIGATE_FRONT_DOOR_PW=derekyle:AnW51Kehd0
       - FRIGATE_BABY_CAM_PW=derekyle:oaGe884hcc
+      - FRIGATE_PARKING_CAM_PW=admin:WWGVkkAdLgc5s1
 
 
   plex:
