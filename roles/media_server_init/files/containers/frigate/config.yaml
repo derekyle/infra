@@ -8,14 +8,37 @@ mqtt:
 #     type: edgetpu
 #     device: usb
 
-logger:
-  default: debug
+# logger:
+#   default: debug
+ffmpeg:
+  hwaccel_args: -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format yuv420p
+  record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
 cameras:
   front_door: # <------ Name the camera
     ffmpeg:
       inputs:
-        - path: rtsp://192.168.1.119/live # <----- Update for your camera
+        - path: rtsp://{FRIGATE_FRONT_DOOR_PW}@192.168.1.119/live # <----- Update for your camera
+          roles:
+            - detect
+            - rtmp
+            - record
+    detect:
+      width: 1280 # <---- update for your camera's resolution
+      height: 720 # <---- update for your camera's resolution
+    record:
+      enabled: True
+      retain:
+        days: 7
+        mode: motion
+      events:
+        retain:
+          default: 14
+          mode: active_objects
+  baby_cam: # <------ Name the camera
+    ffmpeg:
+      inputs:
+        - path: rtsp://{FRIGATE_BABY_CAM_PW}@192.168.1.129/live # <----- Update for your camera
           roles:
             - detect
             - rtmp
@@ -24,3 +47,19 @@ cameras:
     detect:
       width: 1280 # <---- update for your camera's resolution
       height: 720 # <---- update for your camera's resolution
+
+birdseye:
+  # Optional: Enable birdseye view (default: shown below)
+  enabled: True
+  # Optional: Width of the output resolution (default: shown below)
+  width: 1280
+  # Optional: Height of the output resolution (default: shown below)
+  height: 720
+  # Optional: Encoding quality of the mpeg1 feed (default: shown below)
+  # 1 is the highest quality, and 31 is the lowest. Lower quality feeds utilize less CPU resources.
+  quality: 8
+  # Optional: Mode of the view. Available options are: objects, motion, and continuous
+  #   objects - cameras are included if they have had a tracked object within the last 30 seconds
+  #   motion - cameras are included if motion was detected in the last 30 seconds
+  #   continuous - all cameras are included always
+  mode: continuous
