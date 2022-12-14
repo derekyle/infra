@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=http://192.168.1.2:5000/api/config/schema
+
 mqtt:
   host: 192.168.1.100
   user: frigate
@@ -15,7 +17,15 @@ ffmpeg:
 
 cameras:
   front_door: # <------ Name the camera
+    mqtt:
+      timestamp: False
+      bounding_box: False
+      crop: True
+      quality: 100
+      height: 500
     ffmpeg:
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
       inputs:
         - path: rtsp://{FRIGATE_FRONT_DOOR_PW}@192.168.1.119/live # <----- Update for your camera
           roles:
@@ -37,6 +47,8 @@ cameras:
 
   parking_cam: # <------ Name the camera
     ffmpeg:
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
       inputs:
         - path: rtsp://{FRIGATE_PARKING_CAM_PW}@192.168.1.166:554/cam/realmonitor?channel=1&subtype=0
           roles:
@@ -60,16 +72,18 @@ cameras:
 
   baby_cam: # <------ Name the camera
     ffmpeg:
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
       inputs:
         - path: rtsp://{FRIGATE_BABY_CAM_PW}@192.168.1.129/live # <----- Update for your camera
           roles:
-            - detect
+            # - detect
             - rtmp
     rtmp:
-      enabled: False # <-- RTMP should be disabled if your stream is not H264
-    detect:
-      width: 1280 # <---- update for your camera's resolution
-      height: 720 # <---- update for your camera's resolution
+      enabled: True # <-- RTMP should be disabled if your stream is not H264
+    # detect:
+    #   width: 1280 # <---- update for your camera's resolution
+    #   height: 720 # <---- update for your camera's resolution
     record:
       enabled: True
       retain:
@@ -79,6 +93,13 @@ cameras:
         retain:
           default: 1
           mode: active_objects
+
+objects:
+  # Optional: list of objects to track from labelmap.txt (default: shown below)
+  track:
+    - person
+    - car
+    - dog
 
 birdseye:
   # Optional: Enable birdseye view (default: shown below)

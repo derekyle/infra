@@ -55,7 +55,20 @@ chown_storage: false
 mergerfs_fstab:
   - path: "{{ storage_path }}"
     branches:
-      - "/merged/PoolPart.*"
+      - "/merged/PoolPart.1906E1E8EBB5"
+      - "/merged/PoolPart.????????"
+    options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=ff,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
+    state: mounted
+    passno: 9
+  - path: "{{ storage_path }}-fast"
+    branches:
+      - "/merged/PoolPart.1906E1E8EBB5"
+    options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=mfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
+    state: mounted
+    passno: 9
+  - path: "{{ storage_path }}-slow"
+    branches:
+      - "/merged/PoolPart.????????"
     options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=mfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
     state: mounted
     passno: 9
