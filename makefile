@@ -1,5 +1,5 @@
 prep_new_disk:
-	ansible-playbook -b -v prep_add_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+	ansible-playbook -b -v prep_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 update_containers:
 	ansible-playbook -b -v update_containers.yaml --ask-become-pass --vault-password-file .vault-password

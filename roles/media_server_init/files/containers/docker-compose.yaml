@@ -3,6 +3,20 @@ version: '3.4'
 volumes:
   postgres-data:
 services:
+  
+  filemover:
+    container_name: filemover
+    image: ubuntu
+    restart: unless-stopped
+    environment:
+      - SIZE_LIMIT=750 #in GB maximum size before script starts moving files
+      - TARGET_SIZE=700 #in GB script moves files until this size is reached
+    volumes:
+      - /storage-fast:/storage-fast
+      - /storage-slow:/storage-slow
+      - /config/filemover/move.sh:/move.sh
+    command: bash -c "apt update && apt install rsync -y && /move.sh"
+    
   frigate:
     container_name: frigate
     privileged: true # this may not be necessary for all setups
