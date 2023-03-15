@@ -401,7 +401,7 @@ services:
         max-file: "1"
 
   nextcloud:
-    image: lscr.io/linuxserver/nextcloud:latest
+    image: lscr.io/linuxserver/nextcloud
     container_name: nextcloud
     environment:
       - PUID=1000
@@ -457,7 +457,29 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
-  
+
+
+
+  lazylibrarian:
+    image: lscr.io/linuxserver/lazylibrarian:latest
+    container_name: lazylibrarian
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+      - DOCKER_MODS=linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
+    volumes:
+      - /config/lazylibrarian:/config
+      - /storage/Downloads/LazyLibrarian:/downloads
+      - /storage/Books:/books #optional
+    ports:
+      - 5299:5299
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.librarian.rule=Host(`librarian.dc5.in`)"
+      - "traefik.http.routers.librarian.entrypoints=websecure"
+      - "traefik.http.routers.librarian.tls.certresolver=myresolver"
   # grafana:
   #   image: grafana/grafana
   #   container_name: grafana

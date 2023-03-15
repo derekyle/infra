@@ -1,7 +1,7 @@
 <?php
 $CONFIG = [
   'htaccess.RewriteBase' => '/',
-  'config_is_read_only' => true,
+  'config_is_read_only' => false,
   'memcache.local' => '\\OC\\Memcache\\APCu',
   'datadirectory' => '/data',
   'instanceid' => 'ocdblat2xgz9',
@@ -22,7 +22,7 @@ $CONFIG = [
       '192.168.1.2',
     ],
   'dbtype' => 'mysql',
-  'version' => '21.0.2.1',
+  'version' => '25.0.4.1',
   'overwrite.cli.url' => 'https://cloud.dc5.in',
   'dbname' => 'nextcloud',
   'dbhost' => 'nextcloud-db',
