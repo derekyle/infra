@@ -1,19 +1,19 @@
-# yaml-language-server: $schema=http://192.168.1.2:5000/api/config/schema
+# yaml-language-server: $schema=http://192.168.1.2:5000/api/config/schema.json
 
 mqtt:
   host: 192.168.1.100
   user: frigate
   password: kenE42nneidGTekwn321
 
-# detectors:
-#   coral:
-#     type: edgetpu
-#     device: usb
+detectors:
+  coral:
+    type: edgetpu
+    device: usb
 
 # logger:
 #   default: debug
 ffmpeg:
-  hwaccel_args: -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format yuv420p
+  hwaccel_args: preset-vaapi
 
 cameras:
   front_door: # <------ Name the camera

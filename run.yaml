@@ -4,8 +4,14 @@
       - 'vars/vault.yaml'
     roles:
       - role: grog.package
+        tags: 
+          - docker
       - role: geerlingguy.docker
+        tags:
+          - docker
       - role: geerlingguy.pip
+        tags:
+          - docker
       - role: sprat.mergerfs
         tags:
           - disks
@@ -18,12 +24,12 @@
         tags:
           - hdidle
       - role: geerlingguy.hdparm
-        vars:
-          hdparm_manage_config: true
-          hdparm_devices:
-          - dev: /dev/sdn
-            options:
-              - "spindown_time = 120"
+        # vars:
+        #   hdparm_manage_config: true
+        #   hdparm_devices:
+        #   - dev: /dev/sdn
+        #     options:
+        #       - "spindown_time = 120"
         tags: 
           - hdparm
       # - role: lifeofguenter.nut

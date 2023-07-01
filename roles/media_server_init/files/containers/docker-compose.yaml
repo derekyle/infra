@@ -21,10 +21,10 @@ services:
     container_name: frigate
     privileged: true # this may not be necessary for all setups
     restart: unless-stopped
-    image: blakeblackshear/frigate:stable
+    image: ghcr.io/blakeblackshear/frigate:stable
     shm_size: "64mb" # update for your cameras based on calculation above
     devices:
-      # - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
+      - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
       # - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
       -  /dev/dri:/dev/dri # for intel hwaccel, needs to be updated for your hardware
     volumes:
@@ -178,6 +178,7 @@ services:
       - "--accesslog=true"
       - "--global.sendanonymoususage=false"
       - "--api.insecure=true"
+      - "--serversTransport.insecureSkipVerify=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.file.filename=/etc/traefik/rules.yaml"
@@ -401,7 +402,7 @@ services:
         max-file: "1"
 
   nextcloud:
-    image: lscr.io/linuxserver/nextcloud
+    image: lscr.io/linuxserver/nextcloud:26.0.1
     container_name: nextcloud
     environment:
       - PUID=1000
@@ -480,35 +481,6 @@ services:
       - "traefik.http.routers.librarian.rule=Host(`librarian.dc5.in`)"
       - "traefik.http.routers.librarian.entrypoints=websecure"
       - "traefik.http.routers.librarian.tls.certresolver=myresolver"
-  # grafana:
-  #   image: grafana/grafana
-  #   container_name: grafana
-  #   # user: "1000"
-  #   ports:
-  #     - 3001:3000
-  #   volumes:
-  #     - /config/grafana:/var/lib/grafana
-  #   restart: unless-stopped
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.grafana.rule=Host(`grafana.dc5.in`)"
-  #     - "traefik.http.routers.grafana.entrypoints=websecure"
-  #     - "traefik.http.routers.grafana.tls.certresolver=myresolver"
-  #   logging:
-  #     options:
-  #       max-size: "1m"
-
-  # influxdb:
-  #   image: influxdb:latest
-  #   container_name: influxdb
-  #   ports:
-  #     - 8086:8086
-  #   volumes:
-  #     - /config/influxdb/data:/var/lib/influxdb
-  #   restart: unless-stopped
-  #   logging:
-  #     options:
-  #       max-size: "1m"
   
   influxdb:
     image: influxdb:latest
@@ -533,41 +505,6 @@ services:
         max-size: "1m"
         max-file: "1"
 
-  # telegraf:
-  #   image: telegraf
-  #   container_name: telegraf
-  #   privileged: true
-  #   command:
-  #     - /bin/bash
-  #     - -c
-  #     - |
-  #       apt update
-  #       apt install -y smartmontools nvme-cli udev
-  #       telegraf
-  #   restart: always
-  #   # extra_hosts:
-  #   #   - "influxdb:192.168.0.110"
-  #   environment:
-  #     HOST_PROC: /rootfs/proc
-  #     HOST_SYS: /rootfs/sys
-  #     HOST_ETC: /rootfs/etc
-  #     INFLUX_TOKEN: "${INFLUX_TOKEN}"
-  #     HOST_MOUNT_PREFIX: /rootfs
-  #   volumes:
-  #     - /config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /sys:/rootfs/sys:ro
-  #     - /proc:/rootfs/proc:ro
-  #     - /etc:/rootfs/etc:ro
-  #     - /run/udev:/run/udev:ro
-  #     - /storage:/storage:ro
-  #     - /proc/self/mounts:/proc/self/mounts
-  #     # - /merged:/merged:ro
-  #   logging:
-  #     options:
-  #       max-size: "1m"
-  #       max-file: "1"
-
 # docker run --rm -i -v /mnt/Z3025Q8K/PoolPart.Z3025Q8K:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
 #   transfer1:
 #     image: instrumentisto/rsync-ssh
@@ -586,96 +523,3 @@ services:
 #       options:
 #         max-size: "1m"
 #         max-file: "1"
-
-# # docker run --rm -i -v /mnt/S300C5K0/PoolPart.S300C5K0:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
-#   transfer2:
-#     image: instrumentisto/rsync-ssh
-#     container_name: transfer2
-#     volumes:
-#       - /mnt/W4J0EZ8J/PoolPart.W4J0EZ8J:/sourcedisk
-#       - /temppool:/destinationpool
-#     entrypoint: rsync
-#     command:
-#       - --archive 
-#       - --progress
-#       - --hard-links
-#       - /sourcedisk/ 
-#       - /destinationpool
-#     logging:
-#       options:
-#         max-size: "1m"
-#         max-file: "1"
-  
-#   transfer3:
-#     image: instrumentisto/rsync-ssh
-#     container_name: transfer3
-#     volumes:
-#       - /mnt/Z301BTH7/PoolPart.Z301BTH7:/sourcedisk
-#       - /temppool:/destinationpool
-#     entrypoint: rsync
-#     command:
-#       - --archive 
-#       - --progress
-#       - --hard-links
-#       - /sourcedisk/ 
-#       - /destinationpool
-#     logging:
-#       options:
-#         max-size: "1m"
-#         max-file: "1"
-
-  # transfer4:
-  #   image: instrumentisto/rsync-ssh
-  #   container_name: transfer4
-  #   volumes:
-  #     - /mnt/Z301ANE1/PoolPart.Z301ANE1:/sourcedisk
-  #     - /temppool:/destinationpool
-  #   entrypoint: rsync
-  #   command:
-  #     - --archive 
-  #     - --progress
-  #     - --hard-links
-  #     - /sourcedisk/ 
-  #     - /destinationpool
-  #   logging:
-  #     options:
-  #       max-size: "1m"
-  #       max-file: "1"
-
-  
-  # transfer5:
-  #   image: instrumentisto/rsync-ssh
-  #   container_name: transfer5
-  #   volumes:
-  #     - /mnt/W4J067FX/PoolPart.W4J067FX:/sourcedisk
-  #     - /temppool:/destinationpool
-  #   entrypoint: rsync
-  #   command:
-  #     - --archive 
-  #     - --progress
-  #     - --hard-links
-  #     - /sourcedisk/ 
-  #     - /destinationpool
-  #   logging:
-  #     options:
-  #       max-size: "1m"
-  #       max-file: "1"
-
-  # transfer6:
-  #   image: instrumentisto/rsync-ssh
-  #   container_name: transfer6
-  #   volumes:
-  #     - /mnt/W4J0KTWJ/PoolPart.W4J0KTWJ:/sourcedisk
-  #     - /temppool:/destinationpool
-  #   entrypoint: rsync
-  #   command:
-  #     - --archive 
-  #     - --progress
-  #     - --hard-links
-  #     - /sourcedisk/ 
-  #     - /destinationpool
-  #   logging:
-  #     options:
-  #       max-size: "1m"
-  #       max-file: "1"
-  

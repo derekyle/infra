@@ -14,11 +14,18 @@ http:
       service: service-homeassistant
       tls:
         certResolver: myresolver
-    router-unifi:
+    # router-unifi:
+    #   entryPoints:
+    #     - websecure
+    #   rule: Host(`unifi.dc5.in`)
+    #   service: service-unifi
+    #   tls:
+    #     certResolver: myresolver
+    router-pikvm:
       entryPoints:
         - websecure
-      rule: Host(`unifi.dc5.in`)
-      service: service-unifi
+      rule: Host(`pikvm.dc5.in`)
+      service: service-pikvm
       tls:
         certResolver: myresolver
   services:
@@ -30,7 +37,7 @@ http:
       loadBalancer:
         servers:
         - url: "https://192.168.1.100:8443"
-    # service-octoprint:
-    #   loadBalancer:
-    #     servers:
-    #     - url: "http://192.168.1.90:80"
+    service-pikvm:
+      loadBalancer:
+        servers:
+        - url: "https://192.168.1.122:443"
