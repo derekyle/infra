@@ -28,7 +28,7 @@ new_disk_prep:
 # nohup rsync --archive --info=progress2 /mnt/tempssd/docker/volumes/c125675b291cbdec21bd98e2722fd91b5f55f91efb3bfc95b8988f46d41e2294/_data/data/ /storage/Backup/nextcloud_data &
 
 data_disks:
-  - { serial: '1906E1E8EBB5', size: '1T', byid: '/dev/disk/by-id/wwn-0x500a0751e1e8ebb5', partsuffix: 'part1', fs: ext4, type: ssd, opts: defaults, state: mounted, content: true }
+  # - { serial: '1906E1E8EBB5', size: '1T', byid: '/dev/disk/by-id/wwn-0x500a0751e1e8ebb5', partsuffix: 'part1', fs: ext4, type: ssd, opts: defaults, state: mounted, content: true }
   - { serial: '2SG53JXJ', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000cca27dc2532a', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'ZL2637LS', size: '14.6T', byid: '/dev/disk/by-id/wwn-0x5000c500c60f5838', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'WCT0DX30', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c500acd2f184', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
