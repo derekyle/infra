@@ -6,8 +6,8 @@ appdata_path: /config
 
 new_disk_prep:
   # - id: /dev/disk/by-id/ata-WDC_WUH721414ALE604_9RG820KC
-  # - diskid: /dev/disk/by-id/wwn-0x5000c500744427b1
-  #   serial: ZR5D67FL
+  # - diskid: /dev/disk/by-id/ata-Samsung_SSD_870_EVO_2TB_S753NS0W800338D
+  #   serial: S753NS0W800338D
   # - diskid: /dev/disk/by-id/wwn-0x5000c5008241958f
   #   serial: W4J0EZ8J
   # - diskid: /dev/disk/by-id/wwn-0x5000c500660dde31
@@ -29,6 +29,7 @@ new_disk_prep:
 
 data_disks:
   # - { serial: '1906E1E8EBB5', size: '1T', byid: '/dev/disk/by-id/wwn-0x500a0751e1e8ebb5', partsuffix: 'part1', fs: ext4, type: ssd, opts: defaults, state: mounted, content: true }
+  - { serial: 'S753NS0W800338D', size: '2T', byid: '/dev/disk/by-id/wwn-0x5002538f338003d8', partsuffix: 'part1', fs: ext4, type: ssd, opts: defaults, state: mounted, content: true }
   - { serial: '2SG53JXJ', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000cca27dc2532a', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'ZL2637LS', size: '14.6T', byid: '/dev/disk/by-id/wwn-0x5000c500c60f5838', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
   - { serial: 'WCT0DX30', size: '7.3T', byid: '/dev/disk/by-id/wwn-0x5000c500acd2f184', partsuffix: 'part1', fs: ext4, type: hdd, opts: defaults, state: mounted, content: true }
@@ -57,7 +58,7 @@ chown_storage: false
 mergerfs_fstab:
   - path: "{{ storage_path }}"
     branches:
-      - "/merged/PoolPart.1906E1E8EBB5"
+      - "/merged/PoolPart.S753NS0W800338D"
       - "/merged/PoolPart.????????"
       - "/merged/PoolPart.Z9H0A081FVGG"
     options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=ff,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
@@ -65,7 +66,7 @@ mergerfs_fstab:
     passno: 9
   - path: "{{ storage_path }}-fast"
     branches:
-      - "/merged/PoolPart.1906E1E8EBB5"
+      - "/merged/PoolPart.S753NS0W800338D"
     options: "defaults,nonempty,allow_other,use_ino,moveonenospc=true,category.create=mfs,dropcacheonclose=true,minfreespace=50G,fsname=mergerfs"
     state: mounted
     passno: 9

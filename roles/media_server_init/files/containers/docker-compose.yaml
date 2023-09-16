@@ -6,7 +6,7 @@ services:
   
   filemover:
     container_name: filemover
-    image: ubuntu
+    image: derekyle/alpine-rsync:latest
     restart: unless-stopped
     environment:
       - SIZE_LIMIT=750 #in GB maximum size before script starts moving files
@@ -15,7 +15,11 @@ services:
       - /storage-fast:/storage-fast
       - /storage-slow:/storage-slow
       - /config/filemover/move.sh:/move.sh
-    command: bash -c "apt update && apt install rsync -y && /move.sh"
+    command: sh "/move.sh"
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
     
   frigate:
     container_name: frigate

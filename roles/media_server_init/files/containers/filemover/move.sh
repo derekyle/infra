@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/ash
 # get full path to oldest file in given directory
 
 let size_limit="SIZE_LIMIT * 1024 * 1024"
