@@ -9,8 +9,8 @@ services:
     image: derekyle/alpine-rsync:latest
     restart: unless-stopped
     environment:
-      - SIZE_LIMIT=750 #in GB maximum size before script starts moving files
-      - TARGET_SIZE=700 #in GB script moves files until this size is reached
+      - SIZE_LIMIT=1750 #in GB maximum size before script starts moving files
+      - TARGET_SIZE=1700 #in GB script moves files until this size is reached
     volumes:
       - /storage-fast:/storage-fast
       - /storage-slow:/storage-slow
