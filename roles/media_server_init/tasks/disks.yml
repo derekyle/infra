@@ -64,7 +64,7 @@
     name: "/merged/PoolPart.{{ item.serial }}"
     src: "/mnt/{{ item.serial }}/PoolPart.{{ item.serial }}"
     fstype: "none"
-    opts: "bind"
+    opts: "bind,nofail"
     # change to 'mounted' to auto mount
     state: "{{ item.state }}"
   loop: "{{ data_disks }}"

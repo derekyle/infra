@@ -3,6 +3,22 @@ version: '3.4'
 volumes:
   postgres-data:
 services:
+
+  watchlistarr:
+    image: nylonee/watchlistarr
+    environment:
+      - SONARR_API_KEY
+      - SONARR_BASE_URL=sonarr:8989
+      - RADARR_API_KEY
+      - RADARR_BASE_URL=radarr:7878
+      - PLEX_TOKEN
+    volumes:
+      - /config/watchlistarr:/app/config
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
   
   filemover:
     container_name: filemover
@@ -33,7 +49,7 @@ services:
       -  /dev/dri:/dev/dri # for intel hwaccel, needs to be updated for your hardware
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /config/frigate/config.yaml:/config/config.yml:ro
+      - /config/frigate:/config
       - /storage/security:/media/frigate
     tmpfs: /tmp/cache
     ports:
@@ -406,7 +422,7 @@ services:
         max-file: "1"
 
   nextcloud:
-    image: lscr.io/linuxserver/nextcloud:26.0.1
+    image: lscr.io/linuxserver/nextcloud:28.0.4
     container_name: nextcloud
     environment:
       - PUID=1000
@@ -485,6 +501,26 @@ services:
       - "traefik.http.routers.librarian.rule=Host(`librarian.dc5.in`)"
       - "traefik.http.routers.librarian.entrypoints=websecure"
       - "traefik.http.routers.librarian.tls.certresolver=myresolver"
+  
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /config/readarr:/config
+      - /storage/data:/books #optional
+      - /path/to/downloadclient-downloads:/downloads #optional
+    ports:
+      - 8787:8787
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.readarr.rule=Host(`readarr.dc5.in`)"
+      - "traefik.http.routers.readarr.entrypoints=websecure"
+      - "traefik.http.routers.readarr.tls.certresolver=myresolver"
   
   influxdb:
     image: influxdb:latest

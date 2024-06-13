@@ -1,6 +1,9 @@
 prep_new_disk:
 	ansible-playbook -b -v prep_new_disk.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
+install_containers:
+	ansible-playbook -b run.yaml --tags container-apps --limit mediaserver --ask-become-pass --vault-password-file .vault-password
+
 update_containers:
 	ansible-playbook -b -v update_containers.yaml --ask-become-pass --vault-password-file .vault-password
 
@@ -12,9 +15,6 @@ init_mediaserver:
 
 add_new_disk:
 	ansible-playbook -b run.yaml --tags disks --limit mediaserver --ask-become-pass --vault-password-file .vault-password
-
-install_containers:
-	ansible-playbook -b run.yaml --tags container-apps --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 
 install_nut:
 	ansible-playbook -b run.yaml --tags nut --limit mediaserver --ask-become-pass --vault-password-file .vault-password
@@ -30,6 +30,9 @@ list_disk_ids:
 
 run_mergerfs:
 	ansible-playbook -b run.yaml --limit mediaserver --tags mergerfs --ask-become-pass --vault-password-file .vault-password
+
+#run_occ:
+# docker exec -it nextcloud occ db:add-missing-indices
 
 reqs:
 	ansible-galaxy install -r requirements.yaml
