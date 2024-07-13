@@ -14,13 +14,13 @@ http:
       service: service-homeassistant
       tls:
         certResolver: myresolver
-    # router-unifi:
-    #   entryPoints:
-    #     - websecure
-    #   rule: Host(`unifi.dc5.in`)
-    #   service: service-unifi
-    #   tls:
-    #     certResolver: myresolver
+    router-unifi:
+      entryPoints:
+        - websecure
+      rule: Host(`unifi.dc5.in`)
+      service: service-unifi
+      tls:
+        certResolver: myresolver
     router-pikvm:
       entryPoints:
         - websecure

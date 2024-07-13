@@ -4,6 +4,27 @@ volumes:
   postgres-data:
 services:
 
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    ports:
+      - 13378:80
+    volumes:
+      - /storage/data/media/audiobooks:/audiobooks
+      - /storage/data/media/ebooks:/ebooks
+      - /config/audiobookshelf/config:/config
+      - /config/audiobookshelf/metadata:/metadata
+    environment:
+      - TZ=America/Los_Angeles
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.abs.rule=Host(`abs.dc5.in`)"
+      - "traefik.http.routers.abs.entrypoints=websecure"
+      - "traefik.http.routers.abs.tls.certresolver=myresolver"
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
   watchlistarr:
     image: nylonee/watchlistarr
     environment:
@@ -502,25 +523,25 @@ services:
       - "traefik.http.routers.librarian.entrypoints=websecure"
       - "traefik.http.routers.librarian.tls.certresolver=myresolver"
   
-  readarr:
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Los_Angeles
-    volumes:
-      - /config/readarr:/config
-      - /storage/data:/books #optional
-      - /path/to/downloadclient-downloads:/downloads #optional
-    ports:
-      - 8787:8787
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.readarr.rule=Host(`readarr.dc5.in`)"
-      - "traefik.http.routers.readarr.entrypoints=websecure"
-      - "traefik.http.routers.readarr.tls.certresolver=myresolver"
+  # readarr:
+  #   image: lscr.io/linuxserver/readarr:develop
+  #   container_name: readarr
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Los_Angeles
+  #   volumes:
+  #     - /config/readarr:/config
+  #     - /storage/data:/books #optional
+  #     - /path/to/downloadclient-downloads:/downloads #optional
+  #   ports:
+  #     - 8787:8787
+  #   restart: unless-stopped
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.readarr.rule=Host(`readarr.dc5.in`)"
+  #     - "traefik.http.routers.readarr.entrypoints=websecure"
+  #     - "traefik.http.routers.readarr.tls.certresolver=myresolver"
   
   influxdb:
     image: influxdb:latest
