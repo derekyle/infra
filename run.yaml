@@ -66,8 +66,46 @@
         tags:
           - telegraf
 
+      - name: add telegraf user to docker group
+        user:
+          name: telegraf
+          groups: docker
+          append: yes
+        tags:
+          - telegraf
+
       - name: install hd-idle into go path
         command:
           cmd: go install github.com/adelolmo/hd-idle@latest
         tags:
           - hdidle
+
+      - name: Gather mount facts
+        ansible.builtin.setup:
+          gather_subset:
+            - mounts
+        tags:
+          - disks
+          - check_mounts
+
+      - name: Check disk mount status
+        ansible.builtin.stat:
+          path: "/mnt/{{ item.serial }}"
+        register: mount_check
+        loop: "{{ data_disks }}"
+        tags:
+          - disks
+          - check_mounts
+
+      - name: Report unmounted or missing disks
+        ansible.builtin.debug:
+          msg: "{{ '\033[91m[CRITICAL]\033[0m' }} Disk with serial {{ item.item.serial }} is not properly mounted at /mnt/{{ item.item.serial }}"
+          verbosity: 0
+        failed_when: true
+        when: >
+          not item.stat.exists or 
+          ('/mnt/' + item.item.serial not in ansible_mounts | map(attribute='mount') | list)
+        loop: "{{ mount_check.results }}"
+        tags:
+          - disks
+          - check_mounts

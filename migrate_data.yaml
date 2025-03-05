@@ -19,7 +19,7 @@
   #   file:
   #     path: "/temppool"
   #     state: directory
-  #     mode: "u=ro,g=ro,o=ro"
+  #     mode: "u=rw,g=rw,o=rw"
 
   # - name: mount mergerfs temp array
   #   mount:
@@ -30,20 +30,44 @@
   #     # change to 'mounted' to auto mount
   #     state: mounted
 
-  - name: remove drive from mergerfs pool
-    command: "mergerfs.ctl -m /temppool remove path /merged/PoolPart.{{ item.serial }}"
-    loop: "{{ new_disk_prep }}"
+  # - name: remove drive from mergerfs pool
+  #   command: "mergerfs.ctl -m /storage-slow remove path /merged/PoolPart.{{ item.serial }}"
+  #   loop: "{{ disks_to_remove }}"
+
+  # - name: start rsync containers
+  #   community.docker.docker_container:
+  #     name: "transfer_{{ item.serial }}"
+  #     state: started
+  #     image: instrumentisto/rsync-ssh
+  #     entrypoint: rsync
+  #     command: -av --progress --hard-links /sourcedisk/ /destinationpool
+  #     volumes:
+  #       - "/mnt/{{ item.serial }}/PoolPart.{{ item.serial }}:/sourcedisk"
+  #       - /mnt/ZR5D67FL/PoolPart.ZR5D67FL:/destinationpool:rw
+  #     container_default_behavior: no_defaults
+  #   loop: "{{ disks_to_remove }}"
 
   - name: start rsync containers
     community.docker.docker_container:
-      name: "transfer_{{ item.serial }}"
+      name: "transfer_Z301AGLS"
       state: started
       image: instrumentisto/rsync-ssh
       entrypoint: rsync
-      command: --archive --progress --hard-links /sourcedisk/ /destinationpool
+      command: -av --progress --hard-links /sourcedisk/ /destinationpool
       volumes:
-        - "/mnt/{{ item.serial }}/PoolPart.{{ item.serial }}:/sourcedisk"
-        - /temppool:/destinationpool
-    loop: "{{ new_disk_prep }}"
+        - "/temptemp/PoolPart.Z301AGLS:/sourcedisk"
+        - /storage-slow:/destinationpool:rw
+      container_default_behavior: no_defaults
 
+  - name: start rsync container 2
+    community.docker.docker_container:
+      name: "transfer_Z3025Q8K"
+      state: started
+      image: instrumentisto/rsync-ssh
+      entrypoint: rsync
+      command: -av --progress --hard-links /sourcedisk/ /destinationpool
+      volumes:
+        - "/temp2/PoolPart.Z3025Q8K:/sourcedisk"
+        - /storage-slow:/destinationpool:rw
+      container_default_behavior: no_defaults
   

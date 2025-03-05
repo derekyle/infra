@@ -7,6 +7,9 @@ install_containers:
 update_containers:
 	ansible-playbook -b -v update_containers.yaml --ask-become-pass --vault-password-file .vault-password
 
+check_mounts:
+	ansible-playbook run.yaml --tags check_mounts --vault-password-file .vault-password
+
 migrate_disk:
 	ansible-playbook -b -v migrate_data.yaml --limit mediaserver --ask-become-pass --vault-password-file .vault-password
 

@@ -4,7 +4,7 @@
   #   - 'vars/vault.yaml'
   roles: []
   tasks:
-    - name: remove drive from mergerfs pool
+    - name: create gpt partition that fills disk
       community.general.parted:
         device: "{{ item.id }}"
         label: gpt

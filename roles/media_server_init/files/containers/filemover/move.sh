@@ -5,6 +5,7 @@ let size_limit="SIZE_LIMIT * 1024 * 1024"
 echo "limit: $size_limit"
 let target_size="TARGET_SIZE * 1024 * 1024"
 echo "target: $target_size"
+echo "current: $(du -s '/storage-fast' | cut -f1)"
 
 source_directory="/storage-fast"
 target_directory="/storage-slow"
