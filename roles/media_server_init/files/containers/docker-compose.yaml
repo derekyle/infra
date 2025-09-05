@@ -2,6 +2,7 @@ version: '3.4'
 
 volumes:
   postgres-data:
+  tailscale-state:
 services:
 
   prowlarr:
@@ -18,14 +19,15 @@ services:
     restart: unless-stopped
 
   audiobookshelf:
+    container_name: audiobookshelf
     image: ghcr.io/advplyr/audiobookshelf:latest
     ports:
       - 13378:80
     volumes:
       - /storage/data/media/audiobooks:/audiobooks
       - /storage/data/media/ebooks:/ebooks
-      - /config/audiobookshelf/config:/config
-      - /config/audiobookshelf/metadata:/metadata
+      - /config/audiobookshelf-new/config:/config
+      - /config/audiobookshelf-new/metadata:/metadata
     environment:
       - TZ=America/Los_Angeles
     labels:
@@ -33,6 +35,7 @@ services:
       - "traefik.http.routers.abs.rule=Host(`abs.dc5.in`)"
       - "traefik.http.routers.abs.entrypoints=websecure"
       - "traefik.http.routers.abs.tls.certresolver=myresolver"
+    restart: unless-stopped
     logging:
       options:
         max-size: "1m"
@@ -56,11 +59,11 @@ services:
   
   filemover:
     container_name: filemover
-    image: derekyle/alpine-rsync:latest
+    image: eeacms/rsync:latest
     restart: unless-stopped
     environment:
       - SIZE_LIMIT=1750 #in GB maximum size before script starts moving files
-      - TARGET_SIZE=1700 #in GB script moves files until this size is reached
+      - TARGET_SIZE=1250 #in GB script moves files until this size is reached
     volumes:
       - /storage-fast:/storage-fast
       - /storage-slow:/storage-slow
@@ -76,7 +79,7 @@ services:
     privileged: true # this may not be necessary for all setups
     restart: unless-stopped
     image: ghcr.io/blakeblackshear/frigate:stable
-    shm_size: "64mb" # update for your cameras based on calculation above
+    shm_size: "128mb" # update for your cameras based on calculation above
     devices:
       - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
       # - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
@@ -165,6 +168,10 @@ services:
       - MAX_REQUEST_SIZE=${max_request_size}B
       - CONNECTION_TIMEOUT=${connection_timeout:-10000}
       - READ_TIMEOUT=${read_timeout:-60000}
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
 
   compreface-fe:
     restart: always
@@ -188,6 +195,10 @@ services:
       - ML_PORT=3000
       - UWSGI_PROCESSES=${uwsgi_processes:-2}
       - UWSGI_THREADS=${uwsgi_threads:-1}
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
 
   plex:
     image: lscr.io/linuxserver/plex:latest
@@ -407,6 +418,10 @@ services:
       - "traefik.http.routers.ombi.entrypoints=websecure"
       - "traefik.http.routers.ombi.tls.certresolver=myresolver"
     restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
 
   nzbget:
     image: lscr.io/linuxserver/nzbget:latest
@@ -536,6 +551,10 @@ services:
       - "traefik.http.routers.librarian.rule=Host(`librarian.dc5.in`)"
       - "traefik.http.routers.librarian.entrypoints=websecure"
       - "traefik.http.routers.librarian.tls.certresolver=myresolver"
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
   
   # readarr:
   #   image: lscr.io/linuxserver/readarr:develop
@@ -598,3 +617,41 @@ services:
 #       options:
 #         max-size: "1m"
 #         max-file: "1"
+  tailscale:
+    image: tailscale/tailscale
+    container_name: tailscale
+    hostname: dereks-media-node   # Change per host
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    network_mode: "host"
+    command:
+      - sh
+      - -c
+      - |
+        tailscaled &
+        sleep 2
+        tailscale up --authkey=tskey-auth-kdvgs6XBd921CNTRL-uJPvcvuVqXCSJDDAsDKmQCnrqFi6aTpk2 --hostname=dereks-media-node --accept-dns=false
+        tail -f /dev/null
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+  syncthing:
+    image: syncthing/syncthing
+    container_name: syncthing
+    depends_on:
+      - tailscale
+    volumes:
+      - /storage/Music:/var/syncthing/data
+      - /config/syncthing-config:/var/syncthing/config
+    network_mode: "service:tailscale" 
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"

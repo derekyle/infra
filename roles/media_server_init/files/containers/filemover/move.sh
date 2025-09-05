@@ -15,8 +15,9 @@ folder_size () {
 }
 
 get_oldest_file () {
-    find "$source_directory" -type f -printf '%C+\t%p\t%h\n' | sort | head -n 1
+    find "$source_directory" -type f -exec stat -c "%Y %n" {} + | sort | head -n 1
 }
+
 
 # find and replace from the beginning of a given string
 get_new_path () {
@@ -30,8 +31,9 @@ do
   while [ $(folder_size) -gt $target_size ]; do
 
       oldest_file=$(get_oldest_file)
-      oldest_file_full_path=$(echo "$oldest_file" | cut -f2)
-      oldest_file_dir=$(echo "$oldest_file" | cut -f3)
+      oldest_file_full_path=$(echo "$oldest_file" | cut -d' ' -f2-)
+      oldest_file_dir=$(dirname "$oldest_file_full_path")
+
 
       new_file_full_path=$(get_new_path "$oldest_file_full_path")
       new_file_dir=$(get_new_path "$oldest_file_dir")
@@ -41,6 +43,6 @@ do
       echo moved "$oldest_file_full_path" "$new_file_full_path"
   done
 
-  sleep 360
+  sleep 30
 
 done
