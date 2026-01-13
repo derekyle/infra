@@ -282,7 +282,7 @@ services:
       - PGID=1000
       - TZ=America/Los_Angeles
       - WEBUI_PORT=8080
-      - UMASK=022
+      - UMASK=000
     volumes:
       - /config/qbittorrent:/config:rw,z
       - /storage/data/torrents:/data/torrents:rw,z
@@ -312,7 +312,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
-      - UMASK=022
+      - UMASK=000
     volumes:
       - /config/sonarr:/config
       - /storage/data:/data
@@ -337,7 +337,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
-      - UMASK=022
+      - UMASK=000
     volumes:
       - /config/radarr:/config:rw,z
       - /storage/data:/data:rw,z
@@ -423,6 +423,56 @@ services:
         max-size: "1m"
         max-file: "1"
 
+  nzbget-tailscale:
+    image: tailscale/tailscale
+    container_name: nzbget-tailscale
+    hostname: nzbget
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    volumes:
+      - /config/tailscale/nzbget:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - TS_AUTHKEY
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_HOSTNAME=nzbget
+      - TS_SERVE_CONFIG=/config/serve.json
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /config
+        cat > /config/serve.json << 'EOF'
+        {
+          "TCP": {
+            "443": {
+              "HTTPS": true
+            }
+          },
+          "Web": {
+            "nzbget:443": {
+              "Handlers": {
+                "/": {
+                  "Proxy": "http://127.0.0.1:6789"
+                }
+              }
+            }
+          }
+        }
+        EOF
+        tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+        sleep 2
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=${TS_HOSTNAME} --accept-dns=false
+        sleep 2
+        tailscale serve --bg --https 443 http://127.0.0.1:6789
+        tail -f /dev/null
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
   nzbget:
     image: lscr.io/linuxserver/nzbget:latest
     container_name: nzbget
@@ -431,19 +481,14 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
-      - UMASK=022
+      - UMASK=000
     volumes:
       - /config/nzbget:/config:rw,z
       - /storage/data/usenet:/data/usenet:rw,z
-    ports:
-      - 6789:6789
+    depends_on:
+      - nzbget-tailscale
+    network_mode: "service:nzbget-tailscale"
     restart: unless-stopped
-    labels:
-      # - "traefik.enable=true"
-      - "traefik.http.routers.nzbget.rule=Host(`nzbget.dc5.in`)"
-      - "traefik.http.routers.nzbget.entrypoints=websecure"
-      - "traefik.http.routers.nzbget.tls.certresolver=myresolver"
-      # - "traefik.http.services.nzbget.loadbalancer.server.port=6789"
     logging:
       options:
         max-size: "1m"
@@ -472,7 +517,7 @@ services:
         max-file: "1"
 
   nextcloud:
-    image: lscr.io/linuxserver/nextcloud:28.0.4
+    image: lscr.io/linuxserver/nextcloud:32.0.3-ls409
     container_name: nextcloud
     environment:
       - PUID=1000
@@ -628,13 +673,15 @@ services:
       - tailscale-state:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
     network_mode: "host"
+    environment:
+      - TS_AUTHKEY
     command:
       - sh
       - -c
       - |
         tailscaled &
         sleep 2
-        tailscale up --authkey=tskey-auth-kdvgs6XBd921CNTRL-uJPvcvuVqXCSJDDAsDKmQCnrqFi6aTpk2 --hostname=dereks-media-node --accept-dns=false
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=dereks-media-node --accept-dns=false
         tail -f /dev/null
     logging:
       options:
