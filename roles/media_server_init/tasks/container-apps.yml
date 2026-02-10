@@ -16,13 +16,68 @@
   copy:
     src: "{{ role_path }}/files/containers/"
     dest: "/config"
+  register: copy_result
+
+- name: Force copy docker-compose.yaml to ensure latest version
+  copy:
+    src: "{{ role_path }}/files/containers/docker-compose.yaml"
+    dest: "/config/docker-compose.yaml"
+    force: yes
+  register: compose_file_changed
+
+- name: Debug - Check if docker-compose.yaml changed
+  debug:
+    msg: "docker-compose.yaml {{ 'CHANGED' if compose_file_changed.changed else 'unchanged' }}"
+    verbosity: 0
+
+- name: Debug - Check composer_env variable
+  debug:
+    msg: "TS_AUTHKEY in composer_env: {{ 'YES' if 'TS_AUTHKEY' in composer_env else 'NO' }}"
+    verbosity: 0
+
+- name: Debug - Show TS_AUTHKEY prefix from vault
+  shell: echo "{{ composer_env }}" | grep TS_AUTHKEY | cut -c1-40
+  register: vault_ts_authkey
+  changed_when: false
+
+- name: Display vault TS_AUTHKEY prefix
+  debug:
+    msg: "From vault: {{ vault_ts_authkey.stdout }}"
+    verbosity: 0
 
 - name: create .env file for docker-compose
   copy:
     dest: "/config/.env"
     content: "{{ composer_env }}"
+    mode: '0600'
+    force: yes
+  register: env_file_changed
 
-- name: Create and start services
-  community.docker.docker_compose:
+- name: Debug - Verify TS_AUTHKEY in .env file
+  shell: grep TS_AUTHKEY /config/.env || echo "TS_AUTHKEY not found"
+  register: ts_authkey_check
+  changed_when: false
+
+- name: Display TS_AUTHKEY status
+  debug:
+    msg: "{{ ts_authkey_check.stdout }}"
+    verbosity: 0
+
+- name: Recreate containers if .env or docker-compose.yaml changed
+  community.docker.docker_compose_v2:
     project_src: /config
-  register: output
+    state: present
+    recreate: always
+  when: env_file_changed.changed or compose_file_changed.changed
+  register: output_recreate
+
+- name: Create and start services (no changes)
+  community.docker.docker_compose_v2:
+    project_src: /config
+    state: present
+  when: not (env_file_changed.changed or compose_file_changed.changed)
+  register: output_normal
+
+- name: Set output fact
+  set_fact:
+    output: "{{ output_recreate if (env_file_changed.changed or compose_file_changed.changed) else output_normal }}"

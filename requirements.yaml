@@ -9,7 +9,7 @@ roles:
 # - src: geerlingguy.ntp
 # - src: geerlingguy.github-users
   - src: grog.package
-  - src: sprat.mergerfs
+  - src: tigattack.mergerfs
   # - src: rossmcdonald.telegraf
 # - src: ironicbadger.ansible_role_docker_compose_generator
 # - src: ironicbadger.ansible_role_bash_aliases
@@ -21,6 +21,6 @@ roles:
 # - src: weareinteractive.environment
 
 collections:
-  - community.general
-  - ansible.posix
-  - community.docker
+  - name: community.general
+  - name: ansible.posix
+  - name: community.docker

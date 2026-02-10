@@ -12,12 +12,14 @@
       - role: geerlingguy.pip
         tags:
           - docker
-      - role: sprat.mergerfs
+      - role: tigattack.mergerfs
         tags:
           - disks
           - mergerfs
       - role: media_server_init
       - role: telegraf
+        vars:
+          telegraf_start_service: false
         tags:
           - telegraf
       - role: andrewrothstein.go
@@ -58,19 +60,59 @@
         when: ansible_distribution == 'Ubuntu'
 
       - name: copy over telegraf conf file
-        copy:
+        ansible.builtin.copy:
           src: telegraf.conf
           dest: /etc/telegraf/telegraf.conf
           owner: telegraf
           group: telegraf
+        become: true
+        tags:
+          - telegraf
+
+      - name: ensure telegraf log directory exists
+        ansible.builtin.file:
+          path: /var/log/telegraf
+          state: directory
+          owner: telegraf
+          group: telegraf
+          mode: "0755"
+        become: true
         tags:
           - telegraf
 
       - name: add telegraf user to docker group
-        user:
+        ansible.builtin.user:
           name: telegraf
           groups: docker
           append: yes
+        become: true
+        tags:
+          - telegraf
+
+      - name: Validate telegraf configuration
+        ansible.builtin.command:
+          cmd: /usr/bin/telegraf -config /etc/telegraf/telegraf.conf -test
+        register: telegraf_validate
+        changed_when: false
+        failed_when: false
+        become: true
+        become_user: telegraf
+        tags:
+          - telegraf
+
+      - name: Fail with telegraf error if config invalid
+        ansible.builtin.fail:
+          msg: "Telegraf config test failed: {{ (telegraf_validate.stderr_lines + telegraf_validate.stdout_lines) | join(' ') }}"
+        when: telegraf_validate.rc != 0
+        tags:
+          - telegraf
+
+      - name: start and enable telegraf service
+        ansible.builtin.service:
+          name: telegraf
+          state: started
+          enabled: true
+        become: true
         tags:
           - telegraf
 

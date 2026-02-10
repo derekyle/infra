@@ -1,5 +1,3 @@
-version: '3.4'
-
 volumes:
   postgres-data:
   tailscale-state:
@@ -44,11 +42,12 @@ services:
   watchlistarr:
     image: nylonee/watchlistarr
     environment:
-      - SONARR_API_KEY
+      - SONARR_API_KEY=${SONARR_API_KEY}
       - SONARR_BASE_URL=sonarr:8989
-      - RADARR_API_KEY
+      - RADARR_API_KEY=${RADARR_API_KEY}
       - RADARR_BASE_URL=radarr:7878
-      - PLEX_TOKEN
+      - PLEX_TOKEN=${PLEX_TOKEN}
+      # - LOG_LEVEL=DEBUG
     volumes:
       - /config/watchlistarr:/app/config
     restart: unless-stopped
@@ -273,6 +272,41 @@ services:
         max-size: "1m"
         max-file: "1"
 
+  qbittorrent-tailscale:
+    image: tailscale/tailscale
+    container_name: qbittorrent-tailscale
+    hostname: qbittorrent
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    volumes:
+      - /config/tailscale/qbittorrent:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+    env_file:
+      - .env
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_HOSTNAME=qbittorrent
+    command:
+      - sh
+      - -c
+      - |
+        tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+        sleep 2
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=$TS_HOSTNAME --accept-dns=false
+        sleep 2
+        tailscale serve --bg --https 443 http://127.0.0.1:8080
+        tail -f /dev/null
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
   qbittorrent:
     image: linuxserver/qbittorrent:4.1.9.99201911190849-6738-0b055d8ubuntu18.04.1-ls54
     container_name: qbittorrent
@@ -286,19 +320,50 @@ services:
     volumes:
       - /config/qbittorrent:/config:rw,z
       - /storage/data/torrents:/data/torrents:rw,z
-    ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
+    depends_on:
+      - qbittorrent-tailscale
+    network_mode: "service:qbittorrent-tailscale"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.qb.rule=Host(`qb.dc5.in`)"
-      - "traefik.http.routers.qb.entrypoints=websecure"
-      - "traefik.http.routers.qb.tls.certresolver=myresolver"
-      - "traefik.http.routers.qbittorrent.tls.domains[0].main=qb.dc5.in"
-      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
-      # - "traefik.port=8080"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.qb.rule=Host(`qb.dc5.in`)"
+    #   - "traefik.http.routers.qb.entrypoints=websecure"
+    #   - "traefik.http.routers.qb.tls.certresolver=myresolver"
+    #   - "traefik.http.routers.qbittorrent.tls.domains[0].main=qb.dc5.in"
+    #   - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+    #   # - "traefik.port=8080"
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+  sonarr-tailscale:
+    image: tailscale/tailscale
+    container_name: sonarr-tailscale
+    hostname: sonarr
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    volumes:
+      - /config/tailscale/sonarr:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - .env
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_HOSTNAME=sonarr
+    command:
+      - sh
+      - -c
+      - |
+        tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+        sleep 2
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=$TS_HOSTNAME --accept-dns=false
+        sleep 2
+        tailscale serve --bg --https 443 http://127.0.0.1:8989
+        tail -f /dev/null
+    restart: unless-stopped
     logging:
       options:
         max-size: "1m"
@@ -316,19 +381,52 @@ services:
     volumes:
       - /config/sonarr:/config
       - /storage/data:/data
-    ports:
-      - 8989:8989
+    depends_on:
+      - sonarr-tailscale
+    network_mode: "service:sonarr-tailscale"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.dc5.in`)"
-      - "traefik.http.routers.sonarr.entrypoints=websecure"
-      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.sonarr.rule=Host(`sonarr.dc5.in`)"
+    #   - "traefik.http.routers.sonarr.entrypoints=websecure"
+    #   - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
     logging:
       options:
         max-size: "1m"
         max-file: "1"
   
+  radarr-tailscale:
+    image: tailscale/tailscale
+    container_name: radarr-tailscale
+    hostname: radarr
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    volumes:
+      - /config/tailscale/radarr:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - .env
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_HOSTNAME=radarr
+    command:
+      - sh
+      - -c
+      - |
+        tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+        sleep 2
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=$TS_HOSTNAME --accept-dns=false
+        sleep 2
+        tailscale serve --bg --https 443 http://127.0.0.1:7878
+        tail -f /dev/null
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
@@ -341,14 +439,15 @@ services:
     volumes:
       - /config/radarr:/config:rw,z
       - /storage/data:/data:rw,z
-    ports:
-      - 7878:7878
+    depends_on:
+      - radarr-tailscale
+    network_mode: "service:radarr-tailscale"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.dc5.in`)"
-      - "traefik.http.routers.radarr.entrypoints=websecure"
-      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.radarr.rule=Host(`radarr.dc5.in`)"
+    #   - "traefik.http.routers.radarr.entrypoints=websecure"
+    #   - "traefik.http.routers.radarr.tls.certresolver=myresolver"
     logging:
       options:
         max-size: "1m"
@@ -377,6 +476,38 @@ services:
         max-size: "1m"
         max-file: "1"
 
+  tautulli-tailscale:
+    image: tailscale/tailscale
+    container_name: tautulli-tailscale
+    hostname: tautulli
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    volumes:
+      - /config/tailscale/tautulli:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - .env
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_HOSTNAME=tautulli
+    command:
+      - sh
+      - -c
+      - |
+        tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+        sleep 2
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=$TS_HOSTNAME --accept-dns=false
+        sleep 2
+        tailscale serve --bg --https 443 http://127.0.0.1:8181
+        tail -f /dev/null
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
   tautulli:
     image: lscr.io/linuxserver/tautulli:latest
     container_name: tautulli
@@ -387,14 +518,15 @@ services:
       - TZ=America/Los_Angeles
     volumes:
       - /config/tautulli:/config:rw,z
-    ports:
-      - 8181:8181
+    depends_on:
+      - tautulli-tailscale
+    network_mode: "service:tautulli-tailscale"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.tautulli.rule=Host(`tautulli.dc5.in`)"
-      - "traefik.http.routers.tautulli.entrypoints=websecure"
-      - "traefik.http.routers.tautulli.tls.certresolver=myresolver"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.tautulli.rule=Host(`tautulli.dc5.in`)"
+    #   - "traefik.http.routers.tautulli.entrypoints=websecure"
+    #   - "traefik.http.routers.tautulli.tls.certresolver=myresolver"
     logging:
       options:
         max-size: "1m"
@@ -433,8 +565,10 @@ services:
     volumes:
       - /config/tailscale/nzbget:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
+    env_file:
+      - .env
     environment:
-      - TS_AUTHKEY
+      - TS_AUTHKEY=${TS_AUTHKEY}
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_HOSTNAME=nzbget
       - TS_SERVE_CONFIG=/config/serve.json
@@ -463,7 +597,7 @@ services:
         EOF
         tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
         sleep 2
-        tailscale up --authkey=${TS_AUTHKEY} --hostname=${TS_HOSTNAME} --accept-dns=false
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=$TS_HOSTNAME --accept-dns=false
         sleep 2
         tailscale serve --bg --https 443 http://127.0.0.1:6789
         tail -f /dev/null
@@ -673,8 +807,10 @@ services:
       - tailscale-state:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
     network_mode: "host"
+    env_file:
+      - .env
     environment:
-      - TS_AUTHKEY
+      - TS_AUTHKEY=${TS_AUTHKEY}
     command:
       - sh
       - -c

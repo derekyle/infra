@@ -7,32 +7,58 @@
     - init
 
 - name: disks
-  include: disks.yml
+  include_tasks:
+    file: disks.yml
+    apply:
+      tags:
+        - disks
+        - init
+        - mount
   tags:
     - disks
     - init
     - mount
 
 - name: install mergerfs-tools
-  include: mergerfs-tools.yml
+  include_tasks:
+    file: mergerfs-tools.yml
+    apply:
+      tags:
+        - mergerfs-tools
+        - init
   tags:
     - mergerfs-tools
     - init
 
 - name: install all container apps
-  include: container-apps.yml
+  include_tasks:
+    file: container-apps.yml
+    apply:
+      tags:
+        - container-apps
+        - init
   tags:
     - container-apps
     - init
 
 - name: file-sharing samba setup
-  include: file-sharing.yml
+  include_tasks:
+    file: file-sharing.yml
+    apply:
+      tags:
+        - file-sharing
+        - init
   tags:
     - file-sharing
     - init
 
 # - name: setup nfs share
-#   include: nfs.yml
+#   include_tasks:
+#     file: nfs.yml
+#     apply:
+#       tags:
+#         - nfs
+#         - init
 #   tags:
 #     - nfs
 #     - init

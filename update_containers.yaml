@@ -5,9 +5,8 @@
     
     tasks:
       - name: Pull to update and restart
-        community.docker.docker_compose:
+        community.docker.docker_compose_v2:
           project_src: /config
-          pull: yes
+          pull: always
           state: present
-          restarted: yes
         register: output
