@@ -55,6 +55,11 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
   
   filemover:
     container_name: filemover
@@ -97,107 +102,107 @@ services:
       - FRIGATE_BABY_CAM_PW=derekyle:oaGe884hcc
       - FRIGATE_PARKING_CAM_PW=admin:WWGVkkAdLgc5s1
 
-  deepstack:
-    container_name: deepstack
-    restart: unless-stopped
-    image: deepquestai/deepstack
-    ports:
-      - '6000:5000'
-    environment:
-      - VISION-FACE=True
-      - MODE=Medium
-      # - API-KEY="enF492jtWfksjeEK29n3398"
-    volumes:
-      - /config/deepstack/datastore:/datastore
+  # deepstack:
+  #   container_name: deepstack
+  #   restart: unless-stopped
+  #   image: deepquestai/deepstack
+  #   ports:
+  #     - '6000:5000'
+  #   environment:
+  #     - VISION-FACE=True
+  #     - MODE=Medium
+  #     # - API-KEY="enF492jtWfksjeEK29n3398"
+  #   volumes:
+  #     - /config/deepstack/datastore:/datastore
   
-  double-take:
-    container_name: double-take
-    image: jakowenko/double-take
-    restart: unless-stopped
-    volumes:
-      - /config/double-take:/.storage
-    ports:
-      - 3000:3000
-  compreface-postgres-db:
-    image: ${registry}compreface-postgres-db:${POSTGRES_VERSION}
-    restart: always
-    container_name: "compreface-postgres-db"
-    environment:
-      - POSTGRES_USER=${postgres_username}
-      - POSTGRES_PASSWORD=${postgres_password}
-      - POSTGRES_DB=${postgres_db}
-    volumes:
-      - /config/compreface/postgres-data:/var/lib/postgresql/data
+  # double-take:
+  #   container_name: double-take
+  #   image: jakowenko/double-take
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /config/double-take:/.storage
+  #   ports:
+  #     - 3000:3000
+  # compreface-postgres-db:
+  #   image: ${registry}compreface-postgres-db:${POSTGRES_VERSION}
+  #   restart: always
+  #   container_name: "compreface-postgres-db"
+  #   environment:
+  #     - POSTGRES_USER=${postgres_username}
+  #     - POSTGRES_PASSWORD=${postgres_password}
+  #     - POSTGRES_DB=${postgres_db}
+  #   volumes:
+  #     - /config/compreface/postgres-data:/var/lib/postgresql/data
 
-  compreface-admin:
-    restart: always
-    image: ${registry}compreface-admin:${ADMIN_VERSION}
-    container_name: "compreface-admin"
-    environment:
-      - POSTGRES_USER=${postgres_username}
-      - POSTGRES_PASSWORD=${postgres_password}
-      - POSTGRES_URL=jdbc:postgresql://${postgres_domain}:${postgres_port}/${postgres_db}
-      - SPRING_PROFILES_ACTIVE=dev
-      - ENABLE_EMAIL_SERVER=${enable_email_server}
-      - EMAIL_HOST=${email_host}
-      - EMAIL_USERNAME=${email_username}
-      - EMAIL_FROM=${email_from}
-      - EMAIL_PASSWORD=${email_password}
-      - ADMIN_JAVA_OPTS=${compreface_admin_java_options}
-      - MAX_FILE_SIZE=${max_file_size}
-      - MAX_REQUEST_SIZE=${max_request_size}B
-    depends_on:
-      - compreface-postgres-db
-      - compreface-api
+  # compreface-admin:
+  #   restart: always
+  #   image: ${registry}compreface-admin:${ADMIN_VERSION}
+  #   container_name: "compreface-admin"
+  #   environment:
+  #     - POSTGRES_USER=${postgres_username}
+  #     - POSTGRES_PASSWORD=${postgres_password}
+  #     - POSTGRES_URL=jdbc:postgresql://${postgres_domain}:${postgres_port}/${postgres_db}
+  #     - SPRING_PROFILES_ACTIVE=dev
+  #     - ENABLE_EMAIL_SERVER=${enable_email_server}
+  #     - EMAIL_HOST=${email_host}
+  #     - EMAIL_USERNAME=${email_username}
+  #     - EMAIL_FROM=${email_from}
+  #     - EMAIL_PASSWORD=${email_password}
+  #     - ADMIN_JAVA_OPTS=${compreface_admin_java_options}
+  #     - MAX_FILE_SIZE=${max_file_size}
+  #     - MAX_REQUEST_SIZE=${max_request_size}B
+  #   depends_on:
+  #     - compreface-postgres-db
+  #     - compreface-api
 
-  compreface-api:
-    restart: always
-    image: ${registry}compreface-api:${API_VERSION}
-    container_name: "compreface-api"
-    depends_on:
-      - compreface-postgres-db
-    environment:
-      - POSTGRES_USER=${postgres_username}
-      - POSTGRES_PASSWORD=${postgres_password}
-      - POSTGRES_URL=jdbc:postgresql://${postgres_domain}:${postgres_port}/${postgres_db}
-      - SPRING_PROFILES_ACTIVE=dev
-      - API_JAVA_OPTS=${compreface_api_java_options}
-      - SAVE_IMAGES_TO_DB=${save_images_to_db}
-      - MAX_FILE_SIZE=${max_file_size}
-      - MAX_REQUEST_SIZE=${max_request_size}B
-      - CONNECTION_TIMEOUT=${connection_timeout:-10000}
-      - READ_TIMEOUT=${read_timeout:-60000}
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
+  # compreface-api:
+  #   restart: always
+  #   image: ${registry}compreface-api:${API_VERSION}
+  #   container_name: "compreface-api"
+  #   depends_on:
+  #     - compreface-postgres-db
+  #   environment:
+  #     - POSTGRES_USER=${postgres_username}
+  #     - POSTGRES_PASSWORD=${postgres_password}
+  #     - POSTGRES_URL=jdbc:postgresql://${postgres_domain}:${postgres_port}/${postgres_db}
+  #     - SPRING_PROFILES_ACTIVE=dev
+  #     - API_JAVA_OPTS=${compreface_api_java_options}
+  #     - SAVE_IMAGES_TO_DB=${save_images_to_db}
+  #     - MAX_FILE_SIZE=${max_file_size}
+  #     - MAX_REQUEST_SIZE=${max_request_size}B
+  #     - CONNECTION_TIMEOUT=${connection_timeout:-10000}
+  #     - READ_TIMEOUT=${read_timeout:-60000}
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
 
-  compreface-fe:
-    restart: always
-    image: ${registry}compreface-fe:${FE_VERSION}
-    container_name: "compreface-ui"
-    ports:
-      - "8000:80"
-    depends_on:
-      - compreface-api
-      - compreface-admin
-    environment:
-      - CLIENT_MAX_BODY_SIZE=${max_request_size}
-      - PROXY_READ_TIMEOUT=${read_timeout:-60000}ms
-      - PROXY_CONNECT_TIMEOUT=${connection_timeout:-10000}ms
+  # compreface-fe:
+  #   restart: always
+  #   image: ${registry}compreface-fe:${FE_VERSION}
+  #   container_name: "compreface-ui"
+  #   ports:
+  #     - "8000:80"
+  #   depends_on:
+  #     - compreface-api
+  #     - compreface-admin
+  #   environment:
+  #     - CLIENT_MAX_BODY_SIZE=${max_request_size}
+  #     - PROXY_READ_TIMEOUT=${read_timeout:-60000}ms
+  #     - PROXY_CONNECT_TIMEOUT=${connection_timeout:-10000}ms
 
-  compreface-core:
-    restart: always
-    image: ${registry}compreface-core:${CORE_VERSION}
-    container_name: "compreface-core"
-    environment:
-      - ML_PORT=3000
-      - UWSGI_PROCESSES=${uwsgi_processes:-2}
-      - UWSGI_THREADS=${uwsgi_threads:-1}
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
+  # compreface-core:
+  #   restart: always
+  #   image: ${registry}compreface-core:${CORE_VERSION}
+  #   container_name: "compreface-core"
+  #   environment:
+  #     - ML_PORT=3000
+  #     - UWSGI_PROCESSES=${uwsgi_processes:-2}
+  #     - UWSGI_THREADS=${uwsgi_threads:-1}
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
 
   plex:
     image: lscr.io/linuxserver/plex:latest
@@ -671,26 +676,26 @@ services:
     volumes:
       - /config/nextcloud/config:/config
       - /storage/Backup/nextcloud_data:/data
-    # ports:
-    #   - 9999:443
+    ports:
+      - 9999:443
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nextcloud.rule=HostHeader(`cloud.dc5.in`)"
-      - "traefik.http.routers.nextcloud.entrypoints=websecure"
-      - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
-      ## HTTP Services
-      # - "traefik.http.routers.nextcloud.service=nextcloud"
-      - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
-      - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://cloud.dc5.in
-      - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' dc5.in *.dc5.in
-      - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
-      - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
-      - traefik.http.middlewares.nextcloud.headers.stsPreload=true
-      - traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav
-      - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/
-      # - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
-      # - traefik.http.services.nextcloud.loadbalancer.server.port=443
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.nextcloud.rule=HostHeader(`cloud.dc5.in`)"
+    #   - "traefik.http.routers.nextcloud.entrypoints=websecure"
+    #   - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
+    #   ## HTTP Services
+    #   # - "traefik.http.routers.nextcloud.service=nextcloud"
+    #   - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
+    #   - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://cloud.dc5.in
+    #   - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' dc5.in *.dc5.in
+    #   - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
+    #   - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
+    #   - traefik.http.middlewares.nextcloud.headers.stsPreload=true
+    #   - traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+    #   - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/
+    #   # - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
+    #   # - traefik.http.services.nextcloud.loadbalancer.server.port=443
     logging:
       options:
         max-size: "1m"
