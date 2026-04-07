@@ -99,9 +99,16 @@ mergerfs_fstab:
   #   state: mounted
   #   passno: 9
 
+# geerlingguy.docker — keep Engine, docker CLI (docker-ce-cli), and compose plugin current so the
+# host client matches a modern daemon (API ≥ 1.44). Uses Docker's official apt repo (stable channel).
+docker_packages_state: latest
+docker_compose_package_state: latest
+
 pip_install_packages:
   - name: docker
+    state: latest
   - name: docker-compose
+    state: latest
 
 # grog.package
 package_list:

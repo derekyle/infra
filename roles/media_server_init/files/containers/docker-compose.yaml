@@ -241,7 +241,8 @@ services:
         max-file: "1"
   
   traefik:
-    image: "traefik:v2.4"
+    # v2.4 uses Docker API client 1.24; modern Engine requires ≥1.44 (see daemon min-api-version).
+    image: "traefik:v2.11"
     container_name: "traefik"
     command:
       - "--log.level=DEBUG"
@@ -263,6 +264,10 @@ services:
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=the.derek.carr@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     ports:
       - "80:80"
       - "443:443"
@@ -679,23 +684,23 @@ services:
     ports:
       - 9999:443
     restart: unless-stopped
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.nextcloud.rule=HostHeader(`cloud.dc5.in`)"
-    #   - "traefik.http.routers.nextcloud.entrypoints=websecure"
-    #   - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
-    #   ## HTTP Services
-    #   # - "traefik.http.routers.nextcloud.service=nextcloud"
-    #   - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
-    #   - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://cloud.dc5.in
-    #   - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' dc5.in *.dc5.in
-    #   - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
-    #   - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
-    #   - traefik.http.middlewares.nextcloud.headers.stsPreload=true
-    #   - traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav
-    #   - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/
-    #   # - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
-    #   # - traefik.http.services.nextcloud.loadbalancer.server.port=443
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=HostHeader(`cloud.dc5.in`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
+      ## HTTP Services
+      # - "traefik.http.routers.nextcloud.service=nextcloud"
+      - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
+      - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://cloud.dc5.in
+      - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' dc5.in *.dc5.in
+      - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
+      - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.nextcloud.headers.stsPreload=true
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/
+      # - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
+      # - traefik.http.services.nextcloud.loadbalancer.server.port=443
     logging:
       options:
         max-size: "1m"
