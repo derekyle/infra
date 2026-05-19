@@ -39,27 +39,78 @@ services:
         max-size: "1m"
         max-file: "1"
 
-  watchlistarr:
-    image: nylonee/watchlistarr
-    environment:
-      - SONARR_API_KEY=${SONARR_API_KEY}
-      - SONARR_BASE_URL=sonarr:8989
-      - RADARR_API_KEY=${RADARR_API_KEY}
-      - RADARR_BASE_URL=radarr:7878
-      - PLEX_TOKEN=${PLEX_TOKEN}
-      # - LOG_LEVEL=DEBUG
+  pulsarr-tailscale:
+    image: tailscale/tailscale
+    container_name: pulsarr-tailscale
+    hostname: pulsarr
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     volumes:
-      - /config/watchlistarr:/app/config
+      - /config/tailscale/pulsarr:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - .env
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_HOSTNAME=pulsarr
+    command:
+      - sh
+      - -c
+      - |
+        tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+        sleep 2
+        tailscale up --authkey=${TS_AUTHKEY} --hostname=$TS_HOSTNAME --accept-dns=false
+        sleep 2
+        tailscale serve --bg --https 443 http://127.0.0.1:3003
+        tail -f /dev/null
     restart: unless-stopped
     logging:
       options:
         max-size: "1m"
         max-file: "1"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
+
+  pulsarr:
+    image: lakker/pulsarr:latest
+    container_name: pulsarr
+    volumes:
+      - ./config/pulsarr/data:/app/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+    depends_on:
+      - pulsarr-tailscale
+    network_mode: "service:pulsarr-tailscale"
+    restart: unless-stopped
+    env_file:
+      - .env
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+  # watchlistarr:
+  #   image: nylonee/watchlistarr
+  #   environment:
+  #     - SONARR_API_KEY=${SONARR_API_KEY}
+  #     - SONARR_BASE_URL=sonarr:8989
+  #     - RADARR_API_KEY=${RADARR_API_KEY}
+  #     - RADARR_BASE_URL=radarr:7878
+  #     - PLEX_TOKEN=${PLEX_TOKEN}
+  #     # - LOG_LEVEL=DEBUG
+  #   volumes:
+  #     - /config/watchlistarr:/app/config
+  #   restart: unless-stopped
+  #   logging:
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 256M
   
   filemover:
     container_name: filemover

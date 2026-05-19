@@ -1,10 +1,27 @@
 http:
+  middlewares:
+    # Tesla 3P integration expects the public key at /.well-known/appspecific/... ;
+    # Home Assistant serves it at /local/com.tesla.3p.public-key.pem
+    middleware-tesla-3p-public-key-path:
+      replacePath:
+        path: /local/com.tesla.3p.public-key.pem
   routers:
+    router-tesla-3p-public-key:
+      entryPoints:
+        - websecure
+      rule: Host(`house.dc5.in`) && Path(`/.well-known/appspecific/com.tesla.3p.public-key.pem`)
+      service: service-homeassistant
+      middlewares:
+        - middleware-tesla-3p-public-key-path
+      tls:
+        certResolver: myresolver
+      priority: 100
     router-homeassistant:
       entryPoints:
         - websecure
       rule: Host(`house.dc5.in`)
       service: service-homeassistant
+      priority: 1
       tls:
         certResolver: myresolver
     router-homeassistant-endpoint:
@@ -12,20 +29,6 @@ http:
         - websecure
       rule: Host(`alexa-endpoint.dc5.in`)
       service: service-homeassistant
-      tls:
-        certResolver: myresolver
-    router-unifi:
-      entryPoints:
-        - websecure
-      rule: Host(`unifi.dc5.in`)
-      service: service-unifi
-      tls:
-        certResolver: myresolver
-    router-pikvm:
-      entryPoints:
-        - websecure
-      rule: Host(`pikvm.dc5.in`)
-      service: service-pikvm
       tls:
         certResolver: myresolver
   services:
