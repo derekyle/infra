@@ -85,6 +85,10 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    deploy:
+      resources:
+        limits:
+          memory: 750M
     logging:
       options:
         max-size: "1m"
@@ -451,6 +455,10 @@ services:
     #   - "traefik.http.routers.sonarr.rule=Host(`sonarr.dc5.in`)"
     #   - "traefik.http.routers.sonarr.entrypoints=websecure"
     #   - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+    deploy:
+      resources:
+        limits:
+          memory: 750M
     logging:
       options:
         max-size: "1m"
@@ -509,6 +517,10 @@ services:
     #   - "traefik.http.routers.radarr.rule=Host(`radarr.dc5.in`)"
     #   - "traefik.http.routers.radarr.entrypoints=websecure"
     #   - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+    deploy:
+      resources:
+        limits:
+          memory: 1100M
     logging:
       options:
         max-size: "1m"
@@ -532,6 +544,10 @@ services:
       - "traefik.http.routers.lidarr.entrypoints=websecure"
       - "traefik.http.routers.lidarr.tls.certresolver=myresolver"
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 250M
     logging:
       options:
         max-size: "1m"
