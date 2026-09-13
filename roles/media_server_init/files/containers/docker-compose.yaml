@@ -1,6 +1,5 @@
 volumes:
   postgres-data:
-  tailscale-state:
 services:
 
   prowlarr:
@@ -15,6 +14,10 @@ services:
     ports:
       - 9696:9696
     restart: unless-stopped
+    logging:
+      options:
+        max-size: "128k"
+        max-file: "1"
 
   audiobookshelf:
     container_name: audiobookshelf
@@ -36,7 +39,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   pulsarr-tailscale:
@@ -68,7 +71,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   pulsarr:
@@ -91,7 +94,7 @@ services:
           memory: 750M
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   # watchlistarr:
@@ -115,7 +118,7 @@ services:
   #       limits:
   #         cpus: '0.5'
   #         memory: 256M
-  
+
   filemover:
     container_name: filemover
     image: eeacms/rsync:latest
@@ -130,15 +133,15 @@ services:
     command: sh "/move.sh"
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
-    
+
   frigate:
     container_name: frigate
     privileged: true # this may not be necessary for all setups
     restart: unless-stopped
     image: ghcr.io/blakeblackshear/frigate:stable
-    shm_size: "128mb" # update for your cameras based on calculation above
+    shm_size: "256mb" # update for your cameras based on calculation above
     devices:
       - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
       # - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
@@ -156,6 +159,10 @@ services:
       - FRIGATE_FRONT_DOOR_PW=derekyle:AnW51Kehd0
       - FRIGATE_BABY_CAM_PW=derekyle:oaGe884hcc
       - FRIGATE_PARKING_CAM_PW=admin:WWGVkkAdLgc5s1
+    logging:
+      options:
+        max-size: "128k"
+        max-file: "1"
 
   # deepstack:
   #   container_name: deepstack
@@ -169,7 +176,7 @@ services:
   #     # - API-KEY="enF492jtWfksjeEK29n3398"
   #   volumes:
   #     - /config/deepstack/datastore:/datastore
-  
+
   # double-take:
   #   container_name: double-take
   #   image: jakowenko/double-take
@@ -292,9 +299,9 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
-  
+
   traefik:
     # v2.4 uses Docker API client 1.24; modern Engine requires ≥1.44 (see daemon min-api-version).
     image: "traefik:v2.11"
@@ -334,7 +341,23 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
+        max-file: "1"
+
+  cloudflare-ddns:
+    image: favonia/cloudflare-ddns:latest
+    container_name: cloudflare-ddns
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - DOMAINS=cloud.dcarr.net
+      - PROXIED=false
+      - IP6_PROVIDER=none
+    logging:
+      options:
+        max-size: "128k"
         max-file: "1"
 
   qbittorrent-tailscale:
@@ -369,7 +392,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   qbittorrent:
@@ -399,7 +422,7 @@ services:
     #   # - "traefik.port=8080"
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   sonarr-tailscale:
@@ -431,7 +454,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   sonarr:
@@ -461,9 +484,9 @@ services:
           memory: 750M
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
-  
+
   radarr-tailscale:
     image: tailscale/tailscale
     container_name: radarr-tailscale
@@ -493,7 +516,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   radarr:
@@ -523,7 +546,7 @@ services:
           memory: 1100M
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   lidarr:
@@ -550,7 +573,7 @@ services:
           memory: 250M
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   tautulli-tailscale:
@@ -582,7 +605,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   tautulli:
@@ -606,31 +629,11 @@ services:
     #   - "traefik.http.routers.tautulli.tls.certresolver=myresolver"
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
-  
-  ombi:
-    image: lscr.io/linuxserver/ombi:latest
-    container_name: ombi
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Los_Angeles
-      # - BASE_URL=/ombi #optional
-    volumes:
-      - /path/to/appdata/config:/config
-    ports:
-      - 3579:3579
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ombi.rule=Host(`ombi.dc5.in`)"
-      - "traefik.http.routers.ombi.entrypoints=websecure"
-      - "traefik.http.routers.ombi.tls.certresolver=myresolver"
-    restart: unless-stopped
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
+
+  # Removed 2026-09-07: Ombi (unmaintained; was running with an unconfigured
+  # /path/to/appdata/config bind mount and throwing constant DB/JSON errors).
 
   nzbget-tailscale:
     image: tailscale/tailscale
@@ -681,7 +684,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   nzbget:
@@ -702,7 +705,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   nextcloud-db:
@@ -724,7 +727,7 @@ services:
     restart: unless-stopped
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
   nextcloud:
@@ -742,7 +745,7 @@ services:
       - NEXTCLOUD_ADMIN_PASSWORD
       - REDIS_HOST=nextcloud-redis
       - REDIS_HOST_PASSWORD=${REDIS_PASSWORD}
-      # - NEXTCLOUD_TRUSTED_DOMAIN=cloud.dc5.in
+      # - NEXTCLOUD_TRUSTED_DOMAIN=cloud.dcarr.net
       # - TRUSTED_PROXIES=172.18.0.0/16
       # - OVERWRITEPROTOCOL=https
     volumes:
@@ -753,14 +756,14 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nextcloud.rule=HostHeader(`cloud.dc5.in`)"
+      - "traefik.http.routers.nextcloud.rule=Host(`cloud.dcarr.net`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=myresolver"
       ## HTTP Services
       # - "traefik.http.routers.nextcloud.service=nextcloud"
       - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
-      - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://cloud.dc5.in
-      - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' dc5.in *.dc5.in
+      - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://cloud.dcarr.net
+      - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' dcarr.net *.dcarr.net
       - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
       - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
       - traefik.http.middlewares.nextcloud.headers.stsPreload=true
@@ -770,10 +773,10 @@ services:
       # - traefik.http.services.nextcloud.loadbalancer.server.port=443
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
-      
+
 
   nextcloud-redis:
     image: 'bitnami/redis:latest'
@@ -782,7 +785,7 @@ services:
       - REDIS_PASSWORD
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
 
@@ -802,16 +805,16 @@ services:
     ports:
       - 5299:5299
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.librarian.rule=Host(`librarian.dc5.in`)"
-      - "traefik.http.routers.librarian.entrypoints=websecure"
-      - "traefik.http.routers.librarian.tls.certresolver=myresolver"
+    # labels:
+      # - "traefik.enable=true"
+      # - "traefik.http.routers.librarian.rule=Host(`librarian.dc5.in`)"
+      # - "traefik.http.routers.librarian.entrypoints=websecure"
+      # - "traefik.http.routers.librarian.tls.certresolver=myresolver"
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
-  
+
   # readarr:
   #   image: lscr.io/linuxserver/readarr:develop
   #   container_name: readarr
@@ -831,7 +834,7 @@ services:
   #     - "traefik.http.routers.readarr.rule=Host(`readarr.dc5.in`)"
   #     - "traefik.http.routers.readarr.entrypoints=websecure"
   #     - "traefik.http.routers.readarr.tls.certresolver=myresolver"
-  
+
   influxdb:
     image: influxdb:latest
     container_name: influxdb
@@ -852,7 +855,7 @@ services:
       # - INFLUXDB_ADMIN_PASSWORD
     logging:
       options:
-        max-size: "1m"
+        max-size: "128k"
         max-file: "1"
 
 # docker run --rm -i -v /mnt/Z3025Q8K/PoolPart.Z3025Q8K:/sourcedisk -v /temppool:/destinationpool instrumentisto/rsync-ssh rsync --archive --info=progress2 /sourcedisk/ /destinationpool
@@ -864,54 +867,16 @@ services:
 #       - /temppool:/destinationpool
 #     entrypoint: rsync
 #     command:
-#       - --archive 
+#       - --archive
 #       - --progress
 #       - --hard-links
 #       - /sourcedisk/
 #       - /destinationpool
 #     logging:
 #       options:
-#         max-size: "1m"
+#         max-size: "128k"
 #         max-file: "1"
-  tailscale:
-    image: tailscale/tailscale
-    container_name: tailscale
-    hostname: dereks-media-node   # Change per host
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    volumes:
-      - tailscale-state:/var/lib/tailscale
-      - /dev/net/tun:/dev/net/tun
-    network_mode: "host"
-    env_file:
-      - .env
-    environment:
-      - TS_AUTHKEY=${TS_AUTHKEY}
-    command:
-      - sh
-      - -c
-      - |
-        tailscaled &
-        sleep 2
-        tailscale up --authkey=${TS_AUTHKEY} --hostname=dereks-media-node --accept-dns=false
-        tail -f /dev/null
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
-
-  syncthing:
-    image: syncthing/syncthing
-    container_name: syncthing
-    depends_on:
-      - tailscale
-    volumes:
-      - /storage/Music:/var/syncthing/data
-      - /config/syncthing-config:/var/syncthing/config
-    network_mode: "service:tailscale" 
-    restart: unless-stopped
-    logging:
-      options:
-        max-size: "1m"
-        max-file: "1"
+  # Removed 2026-09-07: the host runs its own tailscaled (node "mediaserver"), so this
+  # host-network tailscale container could never start ("TUN device tailscale0 is busy").
+  # syncthing depended on it via network_mode: service:tailscale and was removed with it.
+  # Config left on disk at /config/syncthing-config and /var/lib/docker volume config_tailscale-state.

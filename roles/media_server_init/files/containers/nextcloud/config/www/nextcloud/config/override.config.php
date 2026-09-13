@@ -7,14 +7,14 @@ $CONFIG = array (
   'instanceid' => 'ocdblat2xgz9',
   'passwordsalt' => 'YM/RvtP6k+6+BK/9HjzV7EGodmgWkN',
   'secret' => '0gkTE6FyqqlZUAKlh3tfh7Rf8jvHodbUR8cKOrvCADjTBH3B',
-  'overwritehost' => 'cloud.dc5.in',
+  'overwritehost' => 'cloud.dcarr.net',
   'overwriteprotocol' => 'https',
-  'trusted_domains' => 
+  'trusted_domains' =>
   array (
     0 => 'localhost:9999',
-    1 => 'cloud.dc5.in:80',
-    2 => 'cloud.dc5.in:443',
-    3 => 'cloud.dc5.in',
+    1 => 'cloud.dcarr.net:80',
+    2 => 'cloud.dcarr.net:443',
+    3 => 'cloud.dcarr.net',
   ),
   'trusted_proxies' => 
   array (
@@ -23,7 +23,7 @@ $CONFIG = array (
   ),
   'dbtype' => 'mysql',
   // 'version' => '28.0.4.1',
-  'overwrite.cli.url' => 'https://cloud.dc5.in',
+  'overwrite.cli.url' => 'https://cloud.dcarr.net',
   'dbname' => 'nextcloud',
   'dbhost' => 'nextcloud-db',
   'dbport' => '3306',

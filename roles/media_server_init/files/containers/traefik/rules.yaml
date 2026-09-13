@@ -9,7 +9,7 @@ http:
     router-tesla-3p-public-key:
       entryPoints:
         - websecure
-      rule: Host(`house.dc5.in`) && Path(`/.well-known/appspecific/com.tesla.3p.public-key.pem`)
+      rule: Host(`condo.dcarr.net`) && Path(`/.well-known/appspecific/com.tesla.3p.public-key.pem`)
       service: service-homeassistant
       middlewares:
         - middleware-tesla-3p-public-key-path
@@ -19,7 +19,7 @@ http:
     router-homeassistant:
       entryPoints:
         - websecure
-      rule: Host(`house.dc5.in`)
+      rule: Host(`condo.dcarr.net`)
       service: service-homeassistant
       priority: 1
       tls:
@@ -27,7 +27,7 @@ http:
     router-homeassistant-endpoint:
       entryPoints:
         - websecure
-      rule: Host(`alexa-endpoint.dc5.in`)
+      rule: Host(`voice-endpoint.dcarr.net`)
       service: service-homeassistant
       tls:
         certResolver: myresolver
